@@ -3,7 +3,6 @@ package main
 import (
 	"atctest/atcoder"
 	"flag"
-	"fmt"
 	"log"
 )
 
@@ -23,6 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(atcoder.FormatSamples(samples))
-}
 
+	atcoder.Check(samples, command)
+}

@@ -5,13 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gocolly/colly"
+	"log"
+	"os/exec"
 	"strings"
 )
 
 const baseURL = "https://atcoder.jp/contests"
 
 type Sample struct {
-	Input string
+	Input  string
 	Output string
 }
 
@@ -39,16 +41,36 @@ func FormatSamples(samples []Sample) string {
 	return out.String()
 }
 
+func Check(samples []Sample, command string) {
+	fields := strings.Fields(command)
+	c := fields[0]
+	args := fields[1:]
+
+	for i, sample := range samples {
+		cmd := exec.Command(c, args...)
+		cmd.Stdin = strings.NewReader(sample.Input)
+
+		out, err := cmd.Output()
+		if err != nil {
+			log.Fatal(err)
+		}
+		result := "x"
+		if string(out) == sample.Output {
+			result = "o"
+		}
+		fmt.Printf("sample %d -> %s\n", i+1, result)
+		fmt.Print("expected:", sample.Output)
+		fmt.Print("actual:", string(out))
+		fmt.Println()
+	}
+}
+
 func getURL(contest string, problem string) string {
 	return fmt.Sprintf("%s/%s/tasks/%s_%s", baseURL, strings.ToLower(contest), strings.ToLower(contest), strings.ToLower(problem))
 }
 
 func fetchSampleElements(url string) (map[string]string, error) {
 	c := colly.NewCollector()
-
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("visiting", r.URL.String())
-	})
 
 	elements := make(map[string]string)
 	c.OnHTML(`pre`, func(e *colly.HTMLElement) {
@@ -69,7 +91,7 @@ func constructSamples(elements map[string]string) ([]Sample, error) {
 	if len(elements) == 0 {
 		return nil, errors.New("no sample elements found")
 	}
-	if len(elements) % 2 != 0 {
+	if len(elements)%2 != 0 {
 		return nil, fmt.Errorf("number of sample elements should be even because it consists of pair of input/output. got: %d", len(elements))
 	}
 
@@ -93,4 +115,3 @@ func constructSamples(elements map[string]string) ([]Sample, error) {
 
 	return samples, nil
 }
-

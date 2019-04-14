@@ -48,7 +48,7 @@ func (c *Client) getProblemURL() (string, error) {
 		return u1, nil
 	}
 
-	u2 := c.urlType1()
+	u2 := c.urlType2()
 	if isValidURL(u2) {
 		return u2, nil
 	}
@@ -92,6 +92,11 @@ func (c *Client) fetchSampleElements() (map[string]string, error) {
 		title := e.DOM.Parent().Find("h3").Text()
 		if strings.HasPrefix(title, "入力例") || strings.HasPrefix(title, "出力例") {
 			elements[title] = e.Text
+		} else {
+			title := e.DOM.Parent().Parent().Find("h3").Text()
+			if strings.HasPrefix(title, "入力例") || strings.HasPrefix(title, "出力例") {
+				elements[title] = e.Text
+			}
 		}
 	})
 

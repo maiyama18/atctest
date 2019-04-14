@@ -62,7 +62,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		return nil, err
 	}
 
-	checker := atcoder.NewChecker(command)
+	checker := atcoder.NewChecker(command, outStream, errStream)
 
 	return &App{
 		client:  client,

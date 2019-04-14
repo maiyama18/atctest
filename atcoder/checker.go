@@ -38,7 +38,7 @@ func (c *Checker) Check(samples []Sample) bool {
 
 			color.Red("FAILURE\n")
 			fmt.Println("input:")
-			fmt.Println(sample.Input)
+			fmt.Print(sample.Input)
 			fmt.Println("expected output:")
 			fmt.Print(sample.Output)
 			fmt.Println("actual output:")

@@ -53,7 +53,7 @@ func (c *Client) getProblemURL() (string, error) {
 		return u2, nil
 	}
 
-	return "", fmt.Errorf("could not get problem url for problem '%s' of contest '%s'", c.problem, c.problem)
+	return "", fmt.Errorf("could not get problem url for problem '%s' of contest '%s'", c.problem, c.contest)
 }
 
 func (c *Client) urlType1() string {

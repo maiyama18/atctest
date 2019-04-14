@@ -97,7 +97,7 @@ atctest is a command line tool for AtCoder.
 it checks if your program correctly solve the samples provided on the problem page.
 
 EXAMPLE: 
-$ atctest -contest abc051 -problem C -command 'python c.py'
+$ atctest -contest ABC051 -problem C -command 'python c.py'
 
 OPTION:
 `

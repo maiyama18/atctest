@@ -13,8 +13,7 @@ const baseURL = "https://atcoder.jp"
 const (
 	exitCodeOK = iota
 	exitCodeGetSamplesError
-	exitCodeCheckExecutionError
-	exitCodeCheckProgramWrongError
+	exitCodeCheckError
 )
 
 type App struct {
@@ -81,12 +80,8 @@ func (a *App) Run() int {
 		return exitCodeGetSamplesError
 	}
 
-	ok, err := a.checker.Check(samples)
-	if err != nil {
-		return exitCodeCheckExecutionError
-	}
-	if !ok {
-		return exitCodeCheckProgramWrongError
+	if success := a.checker.Check(samples); !success {
+		return exitCodeCheckError
 	}
 
 	return exitCodeOK

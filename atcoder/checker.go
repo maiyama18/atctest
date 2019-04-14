@@ -1,42 +1,66 @@
 package atcoder
 
 import (
+	"bytes"
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 type Checker struct {
-	command string
+	command *exec.Cmd
 }
 
-func NewChecker(command string) *Checker {
-	return &Checker{command: command}
-}
-
-func (c *Checker) Check(samples []Sample) (bool, error) {
-	fields := strings.Fields(c.command)
+func NewChecker(rawCommand string) *Checker {
+	fields := strings.Fields(rawCommand)
 	cm := fields[0]
 	args := fields[1:]
 
-	for i, sample := range samples {
-		cmd := exec.Command(cm, args...)
-		cmd.Stdin = strings.NewReader(sample.Input)
+	return &Checker{command: exec.Command(cm, args...)}
+}
 
-		out, err := cmd.Output()
+func (c *Checker) Check(samples []Sample) bool {
+	successAll := true
+	for i, sample := range samples {
+		success, actual, err := c.checkOne(sample)
+		fmt.Printf("sample %d: ", i+1)
 		if err != nil {
-			log.Fatal(err)
+			successAll = false
+
+			color.Red("ERROR\n")
+			fmt.Println(err)
+		} else if success {
+			color.Green("SUCCESS\n")
+		} else {
+			successAll = false
+
+			color.Red("FAILURE\n")
+			fmt.Println("input:")
+			fmt.Println(sample.Input)
+			fmt.Println("expected output:")
+			fmt.Print(sample.Output)
+			fmt.Println("actual output:")
+			fmt.Print(actual)
 		}
-		result := "x"
-		if string(out) == sample.Output {
-			result = "o"
-		}
-		fmt.Printf("sample %d -> %s\n", i+1, result)
-		fmt.Print("expected:", sample.Output)
-		fmt.Print("actual:", string(out))
 		fmt.Println()
 	}
 
-	return true, nil
+	return successAll
+}
+
+func (c *Checker) checkOne(sample Sample) (bool, string, error) {
+	var errBuf bytes.Buffer
+
+	cmd := *c.command
+	cmd.Stdin = strings.NewReader(sample.Input)
+	cmd.Stderr = &errBuf
+
+	out, err := cmd.Output()
+	if err != nil {
+		return false, "", fmt.Errorf("%s: %s", err.Error(), errBuf.String())
+	}
+
+	return string(out) == sample.Output, string(out), nil
 }

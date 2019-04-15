@@ -28,7 +28,6 @@ func NewChecker(rawCommand string, outStream, errStream io.Writer) *Checker {
 	}
 }
 
-// TODO: use checker's out/errStreams
 func (c *Checker) Check(samples []Sample) bool {
 	successAll := true
 	for i, sample := range samples {

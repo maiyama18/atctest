@@ -44,7 +44,6 @@ func (c *Checker) Check(samples []Sample) bool {
 			_, _ = fmt.Fprintln(c.outStream, "actual output:")
 			_, _ = fmt.Fprint(c.outStream, actual)
 		}
-		_, _ = fmt.Fprintln(c.outStream, "")
 	}
 
 	return successAll

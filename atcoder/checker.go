@@ -1,28 +1,21 @@
 package atcoder
 
 import (
-	"bytes"
+	"atctest/commander"
 	"fmt"
-	"io"
-	"os/exec"
-	"strings"
-
 	"github.com/fatih/color"
+	"io"
 )
 
 type Checker struct {
-	command   *exec.Cmd
+	command   commander.Commander
 	outStream io.Writer
 	errStream io.Writer
 }
 
 func NewChecker(rawCommand string, outStream, errStream io.Writer) *Checker {
-	fields := strings.Fields(rawCommand)
-	cm := fields[0]
-	args := fields[1:]
-
 	return &Checker{
-		command:   exec.Command(cm, args...),
+		command:   commander.NewExternal(rawCommand),
 		outStream: outStream,
 		errStream: errStream,
 	}
@@ -58,16 +51,11 @@ func (c *Checker) Check(samples []Sample) bool {
 }
 
 func (c *Checker) checkOne(sample Sample) (bool, string, error) {
-	var errBuf bytes.Buffer
-
-	cmd := *c.command
-	cmd.Stdin = strings.NewReader(sample.Input)
-	cmd.Stderr = &errBuf
-
-	out, err := cmd.Output()
+	actualOutput, err := c.command.Run(sample.Input)
 	if err != nil {
-		return false, "", fmt.Errorf("%s: %s", err.Error(), errBuf.String())
+		return false, "", err
 	}
+	success := actualOutput == sample.Output
 
-	return string(out) == sample.Output, string(out), nil
+	return success, actualOutput, nil
 }

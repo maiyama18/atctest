@@ -33,26 +33,26 @@ func (c *Checker) Check(samples []Sample) bool {
 	successAll := true
 	for i, sample := range samples {
 		success, actual, err := c.checkOne(sample)
-		fmt.Printf("sample %d: ", i+1)
+		_, _ = fmt.Fprintf(c.outStream, "sample %d: ", i+1)
 		if err != nil {
 			successAll = false
 
-			color.Red("ERROR\n")
-			fmt.Println(err)
+			_, _ = color.New(color.FgRed).Fprintln(c.outStream, "ERROR")
+			_, _ = fmt.Fprintln(c.outStream, err.Error())
 		} else if success {
-			color.Green("SUCCESS\n")
+			_, _ = color.New(color.FgGreen).Fprintln(c.outStream, "SUCCESS")
 		} else {
 			successAll = false
 
-			color.Red("FAILURE\n")
-			fmt.Println("input:")
-			fmt.Print(sample.Input)
-			fmt.Println("expected output:")
-			fmt.Print(sample.Output)
-			fmt.Println("actual output:")
-			fmt.Print(actual)
+			_, _ = color.New(color.FgRed).Fprintln(c.outStream, "FAILURE")
+			_, _ = fmt.Fprintln(c.outStream, "input:")
+			_, _ = fmt.Fprint(c.outStream, sample.Input)
+			_, _ = fmt.Fprintln(c.outStream, "expected output:")
+			_, _ = fmt.Fprint(c.outStream, sample.Output)
+			_, _ = fmt.Fprintln(c.outStream, "actual output:")
+			_, _ = fmt.Fprint(c.outStream, actual)
 		}
-		fmt.Println()
+		_, _ = fmt.Fprintln(c.outStream, "")
 	}
 
 	return successAll

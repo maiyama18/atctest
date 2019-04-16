@@ -12,5 +12,11 @@ $ go get -u github.com/mui87/atctest
 ## usage
 
 ```bash
-atctest -contest ABC051 -problem C -command 'python c.py'
+atctest -contest ABC087 -problem A -command 'ruby abc/087/a.rb'
 ```
+
+#### success case
+
+
+
+#### failure case

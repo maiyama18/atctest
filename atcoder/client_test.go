@@ -9,6 +9,11 @@ import (
 
 const dummyBaseURL = "https://dummyatcoder.jp"
 
+type mockInfo struct {
+	path       string
+	statusCode int
+}
+
 func TestNewClient(t *testing.T) {
 	tests := []struct {
 		name               string
@@ -95,9 +100,4 @@ func TestNewClient(t *testing.T) {
 			}
 		})
 	}
-}
-
-type mockInfo struct {
-	path       string
-	statusCode int
 }

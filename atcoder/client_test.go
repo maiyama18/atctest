@@ -1,12 +1,13 @@
 package atcoder
 
 import (
-	"gopkg.in/h2non/gock.v1"
 	"io/ioutil"
 	"net/http"
 	"path"
 	"strings"
 	"testing"
+
+	"gopkg.in/h2non/gock.v1"
 )
 
 const dummyBaseURL = "https://dummyatcoder.jp"
@@ -117,8 +118,73 @@ func TestClient_GetSamples(t *testing.T) {
 		{
 			name:            "success",
 			inputProblemURL: dummyBaseURL + "/contests/abc124/tasks/abc124_b",
-			mockRequestPath: "/contests/abc124/tasks/abc124_b",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc124/tasks/abc124_b",
 			mockHTMLFile:    "abc124b.html",
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"4",
+						"6 5 6 8",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"4 5 3 5 4",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"9 5 6 8 4",
+						"",
+					}, "\n"),
+					Output: "1\n",
+				},
+			},
+		},
+		{
+			name:            "success-old DOM structure",
+			inputProblemURL: dummyBaseURL + "/contests/abc002/tasks/abc002_2",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc002/tasks/abc002_2",
+			mockHTMLFile:    "abc002c.html",
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"1 0 3 0 2 5",
+						"",
+					}, "\n"),
+					Output: "5.0\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"-1 -2 3 4 5 6",
+						"",
+					}, "\n"),
+					Output: "2.0\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"298 520 903 520 4 663",
+						"",
+					}, "\n"),
+					Output: "43257.5\n",
+				},
+			},
+		},
+		{
+			name:            "failure-nonexistent problem URL",
+			inputProblemURL: dummyBaseURL + "/contests/xxx999/tasks/xxx999_x",
+			mockStatusCode:  http.StatusNotFound,
+			mockHTMLFile:    "xxx999x.html",
+			mockRequestPath: "contests/xxx999/tasks/xxx999_x",
+			expectedErrMsg:  "ERROR: could not get HTML",
 		},
 	}
 	for _, test := range tests {
@@ -132,6 +198,7 @@ func TestClient_GetSamples(t *testing.T) {
 			gock.New(dummyBaseURL).
 				Get(test.mockRequestPath).
 				Reply(test.mockStatusCode).
+				AddHeader("Content-Type", "text/html").
 				BodyString(string(html))
 
 			c := &Client{problemURL: test.inputProblemURL}
@@ -144,7 +211,10 @@ func TestClient_GetSamples(t *testing.T) {
 					t.Fatalf("size of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
 				}
 				for i, expected := range test.expectedSamples {
-
+					actual := samples[i]
+					if actual != expected {
+						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
+					}
 				}
 			} else {
 				if err == nil {

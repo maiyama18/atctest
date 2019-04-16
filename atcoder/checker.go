@@ -1,10 +1,11 @@
 package atcoder
 
 import (
-	"atctest/commander"
 	"fmt"
-	"github.com/fatih/color"
 	"io"
+
+	"github.com/fatih/color"
+	"github.com/mui87/atctest/commander"
 )
 
 type Checker struct {

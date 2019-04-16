@@ -1,11 +1,12 @@
 package app
 
 import (
-	"atctest/atcoder"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
+
+	"github.com/mui87/atctest/atcoder"
 )
 
 const baseURL = "https://atcoder.jp"

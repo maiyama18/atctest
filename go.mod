@@ -1,4 +1,4 @@
-module atctest
+module github.com/mui87/atctest
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"atctest/app"
 	"log"
 	"os"
+
+	"github.com/mui87/atctest/app"
 )
 
 func main() {

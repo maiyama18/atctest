@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(baseURL, contest, problem string) (*Client, error) {
 	c := &Client{baseURL: baseURL, contest: contest, problem: problem}
-	url, err := c.getProblemURL()
+	url, err := c.setProblemURL()
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *Client) GetSamples() ([]Sample, error) {
 	return c.constructSamples(elements)
 }
 
-func (c *Client) getProblemURL() (string, error) {
+func (c *Client) setProblemURL() (string, error) {
 	u1 := c.urlType1()
 	if isValidURL(u1) {
 		return u1, nil
@@ -65,20 +65,16 @@ func (c *Client) urlType1() string {
 func (c *Client) urlType2() string {
 	contestStr := strings.ToLower(c.contest)
 
-	var problemStr string
-	switch c.problem {
-	case "a", "A":
-		problemStr = "1"
-	case "b", "B":
-		problemStr = "2"
-	case "c", "C":
-		problemStr = "3"
-	case "d", "D":
-		problemStr = "4"
-	case "e", "E":
-		problemStr = "5"
-	case "f", "F":
-		problemStr = "6"
+	problemStr, ok := map[string]string{
+		"a": "1",
+		"b": "2",
+		"c": "3",
+		"d": "4",
+		"e": "5",
+		"f": "6",
+	}[strings.ToLower(c.problem)]
+	if !ok {
+		problemStr = "0"
 	}
 
 	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contestStr, contestStr, problemStr)

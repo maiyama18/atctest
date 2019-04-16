@@ -16,4 +16,5 @@ require (
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 // indirect
 	golang.org/x/sync v0.0.0-20190412183630-56d357773e84 // indirect
 	google.golang.org/appengine v1.5.0 // indirect
+	gopkg.in/h2non/gock.v1 v1.0.14
 )

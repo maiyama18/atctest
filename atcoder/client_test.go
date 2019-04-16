@@ -2,7 +2,9 @@ package atcoder
 
 import (
 	"gopkg.in/h2non/gock.v1"
+	"io/ioutil"
 	"net/http"
+	"path"
 	"strings"
 	"testing"
 )
@@ -89,6 +91,60 @@ func TestNewClient(t *testing.T) {
 				}
 				if c.problemURL != test.expectedProblemURL {
 					t.Fatalf("problem URL wrong. want='%s', got='%s'", test.expectedProblemURL, c.problemURL)
+				}
+			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+				}
+			}
+		})
+	}
+}
+
+func TestClient_GetSamples(t *testing.T) {
+	tests := []struct {
+		name            string
+		inputProblemURL string
+		mockRequestPath string
+		mockStatusCode  int
+		mockHTMLFile    string
+		expectedSamples []Sample
+		expectedErrMsg  string
+	}{
+		{
+			name:            "success",
+			inputProblemURL: dummyBaseURL + "/contests/abc124/tasks/abc124_b",
+			mockRequestPath: "/contests/abc124/tasks/abc124_b",
+			mockHTMLFile:    "abc124b.html",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			html, err := ioutil.ReadFile(path.Join("testdata", test.mockHTMLFile))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			defer gock.Off()
+			gock.New(dummyBaseURL).
+				Get(test.mockRequestPath).
+				Reply(test.mockStatusCode).
+				BodyString(string(html))
+
+			c := &Client{problemURL: test.inputProblemURL}
+			samples, err := c.GetSamples()
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err)
+				}
+				if len(samples) != len(test.expectedSamples) {
+					t.Fatalf("size of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
+				}
+				for i, expected := range test.expectedSamples {
+
 				}
 			} else {
 				if err == nil {

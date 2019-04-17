@@ -179,6 +179,30 @@ func TestClient_GetSamples(t *testing.T) {
 			},
 		},
 		{
+			name:            "success-only one sample",
+			inputProblemURL: dummyBaseURL + "/contests/kupc2015/tasks/kupc2015_a",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/kupc2015/tasks/kupc2015_a",
+			mockHTMLFile:    "kupc2015a.html",
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"3",
+						"higashikyoto",
+						"kupconsitetokyotokyoto",
+						"goodluckandhavefun",
+						"",
+					}, "\n"),
+					Output: strings.Join([]string{
+						"1",
+						"2",
+						"0",
+						"",
+					}, "\n"),
+				},
+			},
+		},
+		{
 			name:            "failure-nonexistent problem URL",
 			inputProblemURL: dummyBaseURL + "/contests/xxx999/tasks/xxx999_x",
 			mockStatusCode:  http.StatusNotFound,

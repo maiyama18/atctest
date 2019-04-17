@@ -113,6 +113,18 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 
 	numSamples := len(elements) / 2
 	samples := make([]Sample, numSamples)
+
+	// for html which only has one pair without numbering ["入力例", "出力例"] (without numbering)
+	if numSamples == 1 {
+		if input, ok := elements["入力例"]; ok {
+			if output, ok := elements["出力例"]; ok {
+				samples[0] = Sample{Input: input, Output: output}
+				return samples, nil
+			}
+		}
+	}
+
+	// for html which has pairs of samples with numbering ["入力例 1", "出力例 1", "入力例 2", ...]
 	for i := 1; i <= numSamples; i++ {
 		inputKey := fmt.Sprintf("入力例 %d", i)
 		outputKey := fmt.Sprintf("出力例 %d", i)

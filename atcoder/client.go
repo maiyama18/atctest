@@ -73,7 +73,7 @@ func (c *Client) setProblemURL() (string, error) {
 		return u2, nil
 	}
 
-	return "", fmt.Errorf("ERROR: could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
+	return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
 }
 
 func (c *Client) urlType1() string {
@@ -156,7 +156,7 @@ func (c *Client) fetchSampleElements() (map[string]string, error) {
 	})
 
 	if err := cl.Visit(c.problemURL); err != nil {
-		return nil, fmt.Errorf("ERROR: could not get HTML: %s", c.problemURL)
+		return nil, fmt.Errorf("could not get HTML: %s", c.problemURL)
 	}
 
 	return elements, nil
@@ -164,10 +164,10 @@ func (c *Client) fetchSampleElements() (map[string]string, error) {
 
 func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) {
 	if len(elements) == 0 {
-		return nil, errors.New("ERROR: no sample elements found")
+		return nil, errors.New("no sample elements found")
 	}
 	if len(elements)%2 != 0 {
-		return nil, fmt.Errorf("ERROR: number of sample elements should be even because it consists of pair of input/output. got: %d", len(elements))
+		return nil, fmt.Errorf("number of sample elements should be even because it consists of pair of input/output. got: %d", len(elements))
 	}
 
 	numSamples := len(elements) / 2
@@ -190,11 +190,11 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 
 		input, ok := elements[inputKey]
 		if !ok {
-			return nil, fmt.Errorf("ERROR: could not find '%s' in HTML", inputKey)
+			return nil, fmt.Errorf("could not find '%s' in HTML", inputKey)
 		}
 		output, ok := elements[outputKey]
 		if !ok {
-			return nil, fmt.Errorf("ERROR: could not find '%s' in HTML", outputKey)
+			return nil, fmt.Errorf("could not find '%s' in HTML", outputKey)
 		}
 
 		samples[i-1] = Sample{Input: input, Output: output}

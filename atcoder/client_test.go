@@ -19,10 +19,14 @@ type mockInfo struct {
 
 func TestNewClient(t *testing.T) {
 	tests := []struct {
-		name               string
-		inputContest       string
-		inputProblem       string
-		mockInfos          []mockInfo
+		name string
+
+		inputContest      string
+		inputProblem      string
+		inputCacheDirPath string
+
+		mockInfos []mockInfo
+
 		expectedProblemURL string
 		expectedErrMsg     string
 	}{
@@ -85,7 +89,7 @@ func TestNewClient(t *testing.T) {
 					Reply(mockInfo.statusCode)
 			}
 
-			c, err := NewClient(dummyBaseURL, test.inputContest, test.inputProblem)
+			c, err := NewClient(dummyBaseURL, test.inputContest, test.inputProblem, test.inputCacheDirPath)
 			if test.expectedErrMsg == "" {
 				if err != nil {
 					t.Fatalf("err should be nil. got: %s", err)
@@ -209,7 +213,7 @@ func TestClient_GetSamples(t *testing.T) {
 			mockStatusCode:  http.StatusNotFound,
 			mockHTMLFile:    "xxx999x.html",
 			mockRequestPath: "contests/xxx999/tasks/xxx999_x",
-			expectedErrMsg:  "ERROR: could not get HTML",
+			expectedErrMsg:  "could not get HTML",
 		},
 	}
 	for _, test := range tests {

@@ -39,20 +39,20 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	flags.StringVar(&problem, "problem", "", "problem you are solving. e.g.) C")
 	flags.StringVar(&command, "command", "", "command to execute your program. e.g.) 'python c.py'")
 	if err := flags.Parse(args[1:]); err != nil {
-		return nil, errors.New("ERROR: failed to parse flags")
+		return nil, errors.New("failed to parse flags")
 	}
 
 	if contest == "" {
 		flags.Usage()
-		return nil, errors.New("ERROR: specify the contest you are challenging. e.g.) ABC051")
+		return nil, errors.New("specify the contest you are challenging. e.g.) ABC051")
 	}
 	if problem == "" {
 		flags.Usage()
-		return nil, errors.New("ERROR: specify the problem you are solving. e.g.) C")
+		return nil, errors.New("specify the problem you are solving. e.g.) C")
 	}
 	if command == "" {
 		flags.Usage()
-		return nil, errors.New("ERROR: specify the command to execute your program. e.g.) 'python c.py'")
+		return nil, errors.New("specify the command to execute your program. e.g.) 'python c.py'")
 	}
 
 	var cacheDirPath string

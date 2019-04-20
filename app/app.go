@@ -13,13 +13,6 @@ import (
 
 const baseURL = "https://atcoder.jp"
 
-// TODO: appの構造をgogoに習って変更
-const (
-	exitCodeOK = iota
-	exitCodeGetSamplesError
-	exitCodeCheckError
-)
-
 type App struct {
 	client  *atcoder.Client
 	checker *atcoder.Checker
@@ -34,6 +27,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	flags.Usage = func() {
 		_, _ = fmt.Fprintf(errStream, helpMessage)
 		flags.PrintDefaults()
+		_, _ = fmt.Fprintf(errStream, "")
 	}
 
 	var (
@@ -84,18 +78,17 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	}, nil
 }
 
-func (a *App) Run() int {
+func (a *App) Run() error {
 	samples, err := a.client.GetSamples()
 	if err != nil {
-		_, _ = fmt.Fprintf(a.errStream, err.Error())
-		return exitCodeGetSamplesError
+		return err
 	}
 
 	if success := a.checker.Check(samples); !success {
-		return exitCodeCheckError
+		return err
 	}
 
-	return exitCodeOK
+	return nil
 }
 
 const helpMessage = `

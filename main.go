@@ -1,18 +1,28 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/mui87/atctest/app"
 )
 
+const (
+	exitCodeOK = iota
+	exitCodeErr
+)
+
 func main() {
 	a, err := app.New(os.Args, os.Stdout, os.Stderr)
 	if err != nil {
-		log.Fatal(err)
-		os.Exit(128)
+		_, _ = fmt.Fprintf(os.Stderr, err.Error())
+		os.Exit(exitCodeErr)
 	}
 
-	os.Exit(a.Run())
+	if err := a.Run(); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, err.Error())
+		os.Exit(exitCodeErr)
+	}
+
+	os.Exit(exitCodeOK)
 }

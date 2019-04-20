@@ -29,8 +29,13 @@ type Client struct {
 }
 
 func NewClient(baseURL, contest, problem, cacheDirPath string) (*Client, error) {
-	// TODO: 初期化時にcontestとproblemをToLowerしておく
-	c := &Client{baseURL: baseURL, contest: contest, problem: problem, cacheDirPath: cacheDirPath}
+	c := &Client{
+		baseURL:      baseURL,
+		contest:      strings.ToLower(contest),
+		problem:      strings.ToLower(problem),
+		cacheDirPath: cacheDirPath,
+	}
+
 	url, err := c.setProblemURL()
 	if err != nil {
 		return nil, err
@@ -77,14 +82,10 @@ func (c *Client) setProblemURL() (string, error) {
 }
 
 func (c *Client) urlType1() string {
-	contestStr := strings.ToLower(c.contest)
-	problemStr := strings.ToLower(c.problem)
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contestStr, contestStr, problemStr)
+	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, c.problem)
 }
 
 func (c *Client) urlType2() string {
-	contestStr := strings.ToLower(c.contest)
-
 	problemStr, ok := map[string]string{
 		"a": "1",
 		"b": "2",
@@ -92,12 +93,12 @@ func (c *Client) urlType2() string {
 		"d": "4",
 		"e": "5",
 		"f": "6",
-	}[strings.ToLower(c.problem)]
+	}[c.problem]
 	if !ok {
 		problemStr = "0"
 	}
 
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contestStr, contestStr, problemStr)
+	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, problemStr)
 }
 
 func (c *Client) getCachedSamples() ([]Sample, bool) {
@@ -106,7 +107,7 @@ func (c *Client) getCachedSamples() ([]Sample, bool) {
 		return nil, false
 	}
 
-	filename := fmt.Sprintf("%s-%s.json", strings.ToLower(c.contest), strings.ToLower(c.problem))
+	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
 	bytes, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
 	if err != nil {
 		return nil, false
@@ -134,7 +135,7 @@ func (c *Client) cacheSamples(samples []Sample) error {
 	if err != nil {
 		return err
 	}
-	filename := fmt.Sprintf("%s-%s.json", strings.ToLower(c.contest), strings.ToLower(c.problem))
+	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
 
 	return ioutil.WriteFile(path.Join(c.cacheDirPath, filename), bytes, 0644)
 }

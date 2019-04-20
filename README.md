@@ -12,7 +12,6 @@ $ go get -u github.com/mui87/atctest
 ## usage
 
 ```bash
-# example
 $ atctest -contest ABC087 -problem A -command 'ruby abc/087/a.rb'
 ```
 

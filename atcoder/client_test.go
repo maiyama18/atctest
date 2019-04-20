@@ -105,6 +105,7 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
+// TODO: cache関連のテスト追加
 func TestClient_GetSamples(t *testing.T) {
 	tests := []struct {
 		name            string

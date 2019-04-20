@@ -1,9 +1,13 @@
 package atcoder
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -19,11 +23,14 @@ type Client struct {
 	contest string
 	problem string
 
-	problemURL string
+	// TODO: problemURLはフィールドにせずにリクエスト時に作成する
+	problemURL   string
+	cacheDirPath string
 }
 
-func NewClient(baseURL, contest, problem string) (*Client, error) {
-	c := &Client{baseURL: baseURL, contest: contest, problem: problem}
+func NewClient(baseURL, contest, problem, cacheDirPath string) (*Client, error) {
+	// TODO: 初期化時にcontestとproblemをToLowerしておく
+	c := &Client{baseURL: baseURL, contest: contest, problem: problem, cacheDirPath: cacheDirPath}
 	url, err := c.setProblemURL()
 	if err != nil {
 		return nil, err
@@ -34,12 +41,25 @@ func NewClient(baseURL, contest, problem string) (*Client, error) {
 }
 
 func (c *Client) GetSamples() ([]Sample, error) {
+	// TODO: no-cacheオプションを追加
+	if samples, ok := c.getCachedSamples(); ok {
+		return samples, nil
+	}
+
 	elements, err := c.fetchSampleElements()
 	if err != nil {
 		return nil, err
 	}
 
-	return c.constructSamples(elements)
+	samples, err := c.constructSamples(elements)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: error時にログを吐く
+	_ = c.cacheSamples(samples)
+
+	return samples, nil
 }
 
 func (c *Client) setProblemURL() (string, error) {
@@ -78,6 +98,45 @@ func (c *Client) urlType2() string {
 	}
 
 	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contestStr, contestStr, problemStr)
+}
+
+func (c *Client) getCachedSamples() ([]Sample, bool) {
+	_, err := os.Stat(c.cacheDirPath)
+	if err != nil {
+		return nil, false
+	}
+
+	filename := fmt.Sprintf("%s-%s.json", strings.ToLower(c.contest), strings.ToLower(c.problem))
+	bytes, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
+	if err != nil {
+		return nil, false
+	}
+
+	var samples []Sample
+	if err := json.Unmarshal(bytes, &samples); err != nil {
+		return nil, false
+	}
+
+	return samples, true
+}
+
+func (c *Client) cacheSamples(samples []Sample) error {
+	_, err := os.Stat(c.cacheDirPath)
+	if os.IsNotExist(err) {
+		if err := os.MkdirAll(c.cacheDirPath, 0777); err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	bytes, err := json.Marshal(samples)
+	if err != nil {
+		return err
+	}
+	filename := fmt.Sprintf("%s-%s.json", strings.ToLower(c.contest), strings.ToLower(c.problem))
+
+	return ioutil.WriteFile(path.Join(c.cacheDirPath, filename), bytes, 0644)
 }
 
 func (c *Client) fetchSampleElements() (map[string]string, error) {

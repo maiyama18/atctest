@@ -5,12 +5,15 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"path"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/mui87/atctest/atcoder"
 )
 
 const baseURL = "https://atcoder.jp"
 
+// TODO: appの構造をgogoに習って変更
 const (
 	exitCodeOK = iota
 	exitCodeGetSamplesError
@@ -58,7 +61,14 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		return nil, errors.New("ERROR: specify the command to execute your program. e.g.) 'python c.py'")
 	}
 
-	client, err := atcoder.NewClient(baseURL, contest, problem)
+	var cacheDirPath string
+	home, err := homedir.Dir()
+	if err != nil {
+		cacheDirPath = ""
+	} else {
+		cacheDirPath = path.Join(home, ".atctest")
+	}
+	client, err := atcoder.NewClient(baseURL, contest, problem, cacheDirPath)
 	if err != nil {
 		return nil, err
 	}

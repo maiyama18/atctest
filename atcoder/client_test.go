@@ -18,6 +18,11 @@ const dummyBaseURL = "https://dummyatcoder.jp"
 
 var dummyCacheDirPath = path.Join("testdata", "cache")
 
+var dummySamples = []Sample{
+	{Input: "input1\n", Output: "output1\n"},
+	{Input: "input2\n", Output: "output2\n"},
+}
+
 type mockInfo struct {
 	path       string
 	statusCode int
@@ -380,6 +385,78 @@ func TestClient_fetchSampleElements(t *testing.T) {
 	}
 }
 
+func TestClient_getCachedSamples(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputContest      string
+		inputProblem      string
+		inputCacheDirPath string
+
+		expectedSamples []Sample
+		expectedSuccess bool
+	}{
+		{
+			name:              "success",
+			inputContest:      "abc120",
+			inputProblem:      "c",
+			inputCacheDirPath: dummyCacheDirPath,
+			expectedSamples:   dummySamples,
+			expectedSuccess:   true,
+		},
+		{
+			name:              "failed-cache_dir_path_not_exist",
+			inputContest:      "abc120",
+			inputProblem:      "c",
+			inputCacheDirPath: "/nonexistent",
+			expectedSuccess:   false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
+				t.Fatalf("failed to create dummy cache dir: %s", err.Error())
+			}
+			b, err := json.Marshal(test.expectedSamples)
+			if err != nil {
+				t.Fatalf("failed to marshal samples: %s", err.Error())
+			}
+			filename := fmt.Sprintf("%s-%s.json", test.inputContest, test.inputProblem)
+			if err := ioutil.WriteFile(path.Join(dummyCacheDirPath, filename), b, 0644); err != nil {
+				t.Fatalf("failed to create cache file: %s", err.Error())
+			}
+
+			defer func() {
+				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
+					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
+				}
+			}()
+
+			c := &Client{contest: test.inputContest, problem: test.inputProblem, cacheDirPath: test.inputCacheDirPath}
+			samples, ok := c.getCachedSamples()
+			if test.expectedSuccess {
+				if !ok {
+					t.Fatalf("should success to get cache, but failed")
+				}
+
+				if len(samples) != len(test.expectedSamples) {
+					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
+				}
+				for i, expected := range test.expectedSamples {
+					actual := samples[i]
+					if actual != expected {
+						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
+					}
+				}
+			} else {
+				if ok {
+					t.Fatalf("should fail to get cache, but succeeded")
+				}
+			}
+		})
+	}
+}
+
 func TestClient_cacheSamples(t *testing.T) {
 	tests := []struct {
 		name string
@@ -406,21 +483,15 @@ func TestClient_cacheSamples(t *testing.T) {
 			inputContest:      "abc120",
 			inputProblem:      "c",
 			inputCacheDirPath: path.Join("testdata", "new_cache_dir"),
-			inputSamples: []Sample{
-				{Input: "input1\n", Output: "output1\n"},
-				{Input: "input2\n", Output: "output2\n"},
-			},
+			inputSamples:      dummySamples,
 		},
 		{
 			name:              "failed-cache_dir_failed_no_permission",
 			inputContest:      "abc120",
 			inputProblem:      "c",
 			inputCacheDirPath: path.Join("/sys", "new_cache_dir"),
-			inputSamples: []Sample{
-				{Input: "input1\n", Output: "output1\n"},
-				{Input: "input2\n", Output: "output2\n"},
-			},
-			expectedErrMsg: "permission denied",
+			inputSamples:      dummySamples,
+			expectedErrMsg:    "permission denied",
 		},
 	}
 	for _, test := range tests {

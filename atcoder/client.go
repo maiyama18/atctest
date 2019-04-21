@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -25,15 +26,20 @@ type Client struct {
 
 	useCache     bool
 	cacheDirPath string
+
+	outStream io.Writer
+	errStream io.Writer
 }
 
-func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath string) *Client {
+func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath string, outStream, errStream io.Writer) *Client {
 	return &Client{
 		baseURL:      baseURL,
 		contest:      strings.ToLower(contest),
 		problem:      strings.ToLower(problem),
 		useCache:     useCache,
 		cacheDirPath: cacheDirPath,
+		outStream:    outStream,
+		errStream:    errStream,
 	}
 }
 
@@ -59,8 +65,9 @@ func (c *Client) GetSamples() ([]Sample, error) {
 	}
 
 	if c.useCache {
-		// TODO: error時にログを吐く
-		_ = c.cacheSamples(samples)
+		if err := c.cacheSamples(samples); err != nil {
+			_, _ = io.WriteString(c.errStream, err.Error())
+		}
 	}
 
 	return samples, nil

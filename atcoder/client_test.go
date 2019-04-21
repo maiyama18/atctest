@@ -144,6 +144,55 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
+func TestClient_constructSamples(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputElements map[string]string
+
+		expectedSamples []Sample
+		expectedErrMsg  string
+	}{
+		{
+			name: "success",
+			inputElements: map[string]string{
+				"入力例 1": "1 3 5\n",
+				"出力例 1": "9\n",
+				"入力例 2": "2 4\n",
+				"出力例 2": "6\n",
+			},
+			expectedSamples: []Sample{
+				{Input: "1 3 5\n", Output: "9\n"},
+				{Input: "2 4\n", Output: "6\n"},
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			c := &Client{}
+			samples, err := c.constructSamples(test.inputElements)
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err.Error())
+				}
+				if len(samples) != len(test.expectedSamples) {
+					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
+				}
+				for i, expected := range test.expectedSamples {
+					actual := samples[i]
+					if actual != expected {
+						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
+					}
+				}
+			} else {
+				if strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("error message %q is expected to contain %q", err.Error(), test.expectedErrMsg)
+				}
+			}
+		})
+	}
+}
+
 //func TestClient_GetSamples(t *testing.T) {
 //	tests := []struct {
 //		name            string

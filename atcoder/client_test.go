@@ -154,7 +154,7 @@ func TestClient_constructSamples(t *testing.T) {
 		expectedErrMsg  string
 	}{
 		{
-			name: "success",
+			name: "success-multiple_samples",
 			inputElements: map[string]string{
 				"入力例 1": "1 3 5\n",
 				"出力例 1": "9\n",
@@ -165,6 +165,46 @@ func TestClient_constructSamples(t *testing.T) {
 				{Input: "1 3 5\n", Output: "9\n"},
 				{Input: "2 4\n", Output: "6\n"},
 			},
+		},
+		{
+			name: "success-single_sample",
+			inputElements: map[string]string{
+				"入力例": "1 3 5\n",
+				"出力例": "9\n",
+			},
+			expectedSamples: []Sample{
+				{Input: "1 3 5\n", Output: "9\n"},
+			},
+		},
+		{
+			name:           "failure-no_element",
+			inputElements:  map[string]string{},
+			expectedErrMsg: "no sample",
+		},
+		{
+			name: "failure-numbers_of_elements_odd",
+			inputElements: map[string]string{
+				"入力例 1": "1 3 5\n",
+				"出力例 1": "9\n",
+				"入力例 2": "2 4\n",
+			},
+			expectedErrMsg: "number of sample elements should be even",
+		},
+		{
+			name: "failure-index_of_入力例_wrong",
+			inputElements: map[string]string{
+				"入力例 2": "1 3 5\n",
+				"出力例 1": "9\n",
+			},
+			expectedErrMsg: "could not find '入力例 1'",
+		},
+		{
+			name: "failure-index_of_出力例_wrong",
+			inputElements: map[string]string{
+				"入力例 1": "1 3 5\n",
+				"出力例 2": "9\n",
+			},
+			expectedErrMsg: "could not find '出力例 1'",
 		},
 	}
 	for _, test := range tests {
@@ -185,7 +225,7 @@ func TestClient_constructSamples(t *testing.T) {
 					}
 				}
 			} else {
-				if strings.Contains(err.Error(), test.expectedErrMsg) {
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
 					t.Fatalf("error message %q is expected to contain %q", err.Error(), test.expectedErrMsg)
 				}
 			}

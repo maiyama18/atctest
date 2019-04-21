@@ -23,14 +23,16 @@ type Client struct {
 	contest string
 	problem string
 
+	useCache     bool
 	cacheDirPath string
 }
 
-func NewClient(baseURL, contest, problem, cacheDirPath string) *Client {
+func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath string) *Client {
 	return &Client{
 		baseURL:      baseURL,
 		contest:      strings.ToLower(contest),
 		problem:      strings.ToLower(problem),
+		useCache:     useCache,
 		cacheDirPath: cacheDirPath,
 	}
 }

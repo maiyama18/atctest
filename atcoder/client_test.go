@@ -115,6 +115,7 @@ func TestNewClient(t *testing.T) {
 
 		inputContest      string
 		inputProblem      string
+		inputUseCache     bool
 		inputCacheDirPath string
 
 		expectedContest string
@@ -130,7 +131,7 @@ func TestNewClient(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			c := NewClient(dummyBaseURL, test.inputContest, test.inputProblem, test.inputCacheDirPath)
+			c := NewClient(dummyBaseURL, test.inputContest, test.inputProblem, test.inputUseCache, test.inputCacheDirPath)
 			if c.contest != test.expectedContest {
 				t.Fatalf("contest wrong. want='%s', got='%s'", test.expectedContest, c.contest)
 			}

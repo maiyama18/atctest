@@ -34,10 +34,12 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		contest string
 		problem string
 		command string
+		nocache bool
 	)
 	flags.StringVar(&contest, "contest", "", "contest you are challenging. e.g.) ABC051")
 	flags.StringVar(&problem, "problem", "", "problem you are solving. e.g.) C")
 	flags.StringVar(&command, "command", "", "command to execute your program. e.g.) 'python c.py'")
+	flags.BoolVar(&nocache, "nocache", false, "if set, local cache of samples is not used.")
 	if err := flags.Parse(args[1:]); err != nil {
 		return nil, errors.New("failed to parse flags")
 	}
@@ -55,6 +57,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		return nil, errors.New("specify the command to execute your program. e.g.) 'python c.py'")
 	}
 
+	useCache := !nocache
 	var cacheDirPath string
 	home, err := homedir.Dir()
 	if err != nil {
@@ -62,7 +65,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	} else {
 		cacheDirPath = path.Join(home, ".atctest")
 	}
-	client := atcoder.NewClient(baseURL, contest, problem, cacheDirPath)
+	client := atcoder.NewClient(baseURL, contest, problem, useCache, cacheDirPath)
 	if err != nil {
 		return nil, err
 	}

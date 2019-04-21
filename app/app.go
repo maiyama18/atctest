@@ -62,7 +62,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	} else {
 		cacheDirPath = path.Join(home, ".atctest")
 	}
-	client, err := atcoder.NewClient(baseURL, contest, problem, cacheDirPath)
+	client := atcoder.NewClient(baseURL, contest, problem, cacheDirPath)
 	if err != nil {
 		return nil, err
 	}

@@ -36,11 +36,6 @@ func TestNew(t *testing.T) {
 			inputArgs:      strings.Fields("atctest -contest ABC051 -problem C"),
 			expectedErrMsg: "specify the command",
 		},
-		{
-			name:           "failure-nonexistent contest",
-			inputArgs:      strings.Fields("atctest -contest NON051 -problem Z -command 'python c.py'"),
-			expectedErrMsg: "could not find problem page",
-		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

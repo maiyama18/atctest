@@ -23,26 +23,16 @@ type Client struct {
 	contest string
 	problem string
 
-	// TODO: problemURLはフィールドにせずにリクエスト時に作成する
-	problemURL   string
 	cacheDirPath string
 }
 
-func NewClient(baseURL, contest, problem, cacheDirPath string) (*Client, error) {
-	c := &Client{
+func NewClient(baseURL, contest, problem, cacheDirPath string) *Client {
+	return &Client{
 		baseURL:      baseURL,
 		contest:      strings.ToLower(contest),
 		problem:      strings.ToLower(problem),
 		cacheDirPath: cacheDirPath,
 	}
-
-	url, err := c.setProblemURL()
-	if err != nil {
-		return nil, err
-	}
-	c.problemURL = url
-
-	return c, nil
 }
 
 func (c *Client) GetSamples() ([]Sample, error) {
@@ -51,7 +41,11 @@ func (c *Client) GetSamples() ([]Sample, error) {
 		return samples, nil
 	}
 
-	elements, err := c.fetchSampleElements()
+	problemURL, err := c.getProblemURL()
+	if err != nil {
+		return nil, err
+	}
+	elements, err := c.fetchSampleElements(problemURL)
 	if err != nil {
 		return nil, err
 	}
@@ -65,40 +59,6 @@ func (c *Client) GetSamples() ([]Sample, error) {
 	_ = c.cacheSamples(samples)
 
 	return samples, nil
-}
-
-func (c *Client) setProblemURL() (string, error) {
-	u1 := c.urlType1()
-	if isValidURL(u1) {
-		return u1, nil
-	}
-
-	u2 := c.urlType2()
-	if isValidURL(u2) {
-		return u2, nil
-	}
-
-	return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
-}
-
-func (c *Client) urlType1() string {
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, c.problem)
-}
-
-func (c *Client) urlType2() string {
-	problemStr, ok := map[string]string{
-		"a": "1",
-		"b": "2",
-		"c": "3",
-		"d": "4",
-		"e": "5",
-		"f": "6",
-	}[c.problem]
-	if !ok {
-		problemStr = "0"
-	}
-
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, problemStr)
 }
 
 func (c *Client) getCachedSamples() ([]Sample, bool) {
@@ -140,7 +100,7 @@ func (c *Client) cacheSamples(samples []Sample) error {
 	return ioutil.WriteFile(path.Join(c.cacheDirPath, filename), bytes, 0644)
 }
 
-func (c *Client) fetchSampleElements() (map[string]string, error) {
+func (c *Client) fetchSampleElements(problemURL string) (map[string]string, error) {
 	cl := colly.NewCollector()
 
 	elements := make(map[string]string)
@@ -156,8 +116,8 @@ func (c *Client) fetchSampleElements() (map[string]string, error) {
 		}
 	})
 
-	if err := cl.Visit(c.problemURL); err != nil {
-		return nil, fmt.Errorf("could not get HTML: %s", c.problemURL)
+	if err := cl.Visit(problemURL); err != nil {
+		return nil, fmt.Errorf("could not get HTML: %s", problemURL)
 	}
 
 	return elements, nil
@@ -202,6 +162,41 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 	}
 
 	return samples, nil
+}
+
+func (c *Client) getProblemURL() (string, error) {
+	// TODO: goroutine使って効率化
+	u1 := c.urlType1()
+	if isValidURL(u1) {
+		return u1, nil
+	}
+
+	u2 := c.urlType2()
+	if isValidURL(u2) {
+		return u2, nil
+	}
+
+	return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
+}
+
+func (c *Client) urlType1() string {
+	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, c.problem)
+}
+
+func (c *Client) urlType2() string {
+	problemStr, ok := map[string]string{
+		"a": "1",
+		"b": "2",
+		"c": "3",
+		"d": "4",
+		"e": "5",
+		"f": "6",
+	}[c.problem]
+	if !ok {
+		problemStr = "0"
+	}
+
+	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, problemStr)
 }
 
 func isValidURL(url string) bool {

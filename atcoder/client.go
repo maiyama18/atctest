@@ -38,9 +38,10 @@ func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath str
 }
 
 func (c *Client) GetSamples() ([]Sample, error) {
-	// TODO: no-cacheオプションを追加
-	if samples, ok := c.getCachedSamples(); ok {
-		return samples, nil
+	if c.useCache {
+		if samples, ok := c.getCachedSamples(); ok {
+			return samples, nil
+		}
 	}
 
 	problemURL, err := c.getProblemURL()
@@ -57,8 +58,10 @@ func (c *Client) GetSamples() ([]Sample, error) {
 		return nil, err
 	}
 
-	// TODO: error時にログを吐く
-	_ = c.cacheSamples(samples)
+	if c.useCache {
+		// TODO: error時にログを吐く
+		_ = c.cacheSamples(samples)
+	}
 
 	return samples, nil
 }

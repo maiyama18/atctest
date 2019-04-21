@@ -2,8 +2,11 @@ package atcoder
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -11,9 +14,9 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-// TODO: cache関連のテスト追加
-
 const dummyBaseURL = "https://dummyatcoder.jp"
+
+var dummyCacheDirPath = path.Join("testdata", "cache")
 
 type mockInfo struct {
 	path       string
@@ -227,6 +230,9 @@ func TestClient_constructSamples(t *testing.T) {
 					}
 				}
 			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
 				if !strings.Contains(err.Error(), test.expectedErrMsg) {
 					t.Fatalf("error message %q is expected to contain %q", err.Error(), test.expectedErrMsg)
 				}
@@ -360,6 +366,103 @@ func TestClient_fetchSampleElements(t *testing.T) {
 					}
 					if actual != expected {
 						t.Fatalf("sample element for key %q wrong. want=%+v, got=%+v", key, expected, actual)
+					}
+				}
+			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+				}
+			}
+		})
+	}
+}
+
+func TestClient_cacheSamples(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputContest      string
+		inputProblem      string
+		inputCacheDirPath string
+		inputSamples      []Sample
+
+		expectedErrMsg string
+	}{
+		{
+			name:              "success",
+			inputContest:      "abc120",
+			inputProblem:      "c",
+			inputCacheDirPath: dummyCacheDirPath,
+			inputSamples: []Sample{
+				{Input: "input1\n", Output: "output1\n"},
+				{Input: "input2\n", Output: "output2\n"},
+			},
+		},
+		{
+			name:              "success-cache_dir_not_exist",
+			inputContest:      "abc120",
+			inputProblem:      "c",
+			inputCacheDirPath: path.Join("testdata", "new_cache_dir"),
+			inputSamples: []Sample{
+				{Input: "input1\n", Output: "output1\n"},
+				{Input: "input2\n", Output: "output2\n"},
+			},
+		},
+		{
+			name:              "failed-cache_dir_failed_no_permission",
+			inputContest:      "abc120",
+			inputProblem:      "c",
+			inputCacheDirPath: path.Join("/sys", "new_cache_dir"),
+			inputSamples: []Sample{
+				{Input: "input1\n", Output: "output1\n"},
+				{Input: "input2\n", Output: "output2\n"},
+			},
+			expectedErrMsg: "permission denied",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
+				t.Fatal("failed to create dummy cache dir")
+			}
+			defer func() {
+				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
+					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
+				}
+				if test.inputCacheDirPath != dummyCacheDirPath {
+					if err := os.RemoveAll(test.inputCacheDirPath); err != nil {
+						t.Fatalf("failed to remove cache dir after test: %s", test.inputCacheDirPath)
+					}
+				}
+			}()
+
+			c := &Client{contest: test.inputContest, problem: test.inputProblem, cacheDirPath: test.inputCacheDirPath}
+			err := c.cacheSamples(test.inputSamples)
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err)
+				}
+
+				filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
+				b, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
+				if err != nil {
+					t.Fatalf("failed to read cached file")
+				}
+				var samples []Sample
+				if err := json.Unmarshal(b, &samples); err != nil {
+					t.Fatalf("failed to unmarshal samples")
+				}
+
+				if len(samples) != len(test.inputSamples) {
+					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.inputSamples), len(samples))
+				}
+				for i, expected := range test.inputSamples {
+					actual := samples[i]
+					if actual != expected {
+						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
 					}
 				}
 			} else {

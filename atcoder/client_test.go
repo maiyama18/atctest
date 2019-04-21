@@ -2,7 +2,9 @@ package atcoder
 
 import (
 	"bytes"
+	"io/ioutil"
 	"net/http"
+	"path"
 	"strings"
 	"testing"
 
@@ -233,149 +235,141 @@ func TestClient_constructSamples(t *testing.T) {
 	}
 }
 
-//func TestClient_GetSamples(t *testing.T) {
-//	tests := []struct {
-//		name            string
-//		inputProblemURL string
-//		mockRequestPath string
-//		mockStatusCode  int
-//		mockHTMLFile    string
-//		expectedSamples []Sample
-//		expectedErrMsg  string
-//	}{
-//		{
-//			name:            "success",
-//			inputProblemURL: dummyBaseURL + "/contests/abc124/tasks/abc124_b",
-//			mockStatusCode:  http.StatusOK,
-//			mockRequestPath: "contests/abc124/tasks/abc124_b",
-//			mockHTMLFile:    "abc124b.html",
-//			expectedSamples: []Sample{
-//				{
-//					Input: strings.Join([]string{
-//						"4",
-//						"6 5 6 8",
-//						"",
-//					}, "\n"),
-//					Output: "3\n",
-//				},
-//				{
-//					Input: strings.Join([]string{
-//						"5",
-//						"4 5 3 5 4",
-//						"",
-//					}, "\n"),
-//					Output: "3\n",
-//				},
-//				{
-//					Input: strings.Join([]string{
-//						"5",
-//						"9 5 6 8 4",
-//						"",
-//					}, "\n"),
-//					Output: "1\n",
-//				},
-//			},
-//		},
-//		{
-//			name:            "success-old DOM structure",
-//			inputProblemURL: dummyBaseURL + "/contests/abc002/tasks/abc002_2",
-//			mockStatusCode:  http.StatusOK,
-//			mockRequestPath: "contests/abc002/tasks/abc002_2",
-//			mockHTMLFile:    "abc002c.html",
-//			expectedSamples: []Sample{
-//				{
-//					Input: strings.Join([]string{
-//						"1 0 3 0 2 5",
-//						"",
-//					}, "\n"),
-//					Output: "5.0\n",
-//				},
-//				{
-//					Input: strings.Join([]string{
-//						"-1 -2 3 4 5 6",
-//						"",
-//					}, "\n"),
-//					Output: "2.0\n",
-//				},
-//				{
-//					Input: strings.Join([]string{
-//						"298 520 903 520 4 663",
-//						"",
-//					}, "\n"),
-//					Output: "43257.5\n",
-//				},
-//			},
-//		},
-//		{
-//			name:            "success-only one sample",
-//			inputProblemURL: dummyBaseURL + "/contests/kupc2015/tasks/kupc2015_a",
-//			mockStatusCode:  http.StatusOK,
-//			mockRequestPath: "contests/kupc2015/tasks/kupc2015_a",
-//			mockHTMLFile:    "kupc2015a.html",
-//			expectedSamples: []Sample{
-//				{
-//					Input: strings.Join([]string{
-//						"3",
-//						"higashikyoto",
-//						"kupconsitetokyotokyoto",
-//						"goodluckandhavefun",
-//						"",
-//					}, "\n"),
-//					Output: strings.Join([]string{
-//						"1",
-//						"2",
-//						"0",
-//						"",
-//					}, "\n"),
-//				},
-//			},
-//		},
-//		{
-//			name:            "failure-nonexistent problem URL",
-//			inputProblemURL: dummyBaseURL + "/contests/xxx999/tasks/xxx999_x",
-//			mockStatusCode:  http.StatusNotFound,
-//			mockHTMLFile:    "xxx999x.html",
-//			mockRequestPath: "contests/xxx999/tasks/xxx999_x",
-//			expectedErrMsg:  "could not get HTML",
-//		},
-//	}
-//	for _, test := range tests {
-//		t.Run(test.name, func(t *testing.T) {
-//			html, err := ioutil.ReadFile(path.Join("testdata", test.mockHTMLFile))
-//			if err != nil {
-//				t.Fatal(err)
-//			}
-//
-//			defer gock.Off()
-//			gock.New(dummyBaseURL).
-//				Get(test.mockRequestPath).
-//				Reply(test.mockStatusCode).
-//				AddHeader("Content-Type", "text/html").
-//				BodyString(string(html))
-//
-//			c := &Client{problemURL: test.inputProblemURL}
-//			samples, err := c.GetSamples()
-//			if test.expectedErrMsg == "" {
-//				if err != nil {
-//					t.Fatalf("err should be nil. got: %s", err)
-//				}
-//				if len(samples) != len(test.expectedSamples) {
-//					t.Fatalf("size of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
-//				}
-//				for i, expected := range test.expectedSamples {
-//					actual := samples[i]
-//					if actual != expected {
-//						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
-//					}
-//				}
-//			} else {
-//				if err == nil {
-//					t.Fatal("err should not be nil. got: nil")
-//				}
-//				if !strings.Contains(err.Error(), test.expectedErrMsg) {
-//					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
-//				}
-//			}
-//		})
-//	}
-//}
+func TestClient_fetchSampleElements(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputProblemURL string
+
+		mockRequestPath string
+		mockStatusCode  int
+		mockHTMLFile    string
+
+		expectedSampleElements map[string]string
+		expectedErrMsg         string
+	}{
+		{
+			name:            "success",
+			inputProblemURL: dummyBaseURL + "/contests/abc124/tasks/abc124_b",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc124/tasks/abc124_b",
+			mockHTMLFile:    "abc124b.html",
+			expectedSampleElements: map[string]string{
+				"入力例 1": strings.Join([]string{
+					"4",
+					"6 5 6 8",
+					"",
+				}, "\n"),
+				"出力例 1": "3\n",
+				"入力例 2": strings.Join([]string{
+					"5",
+					"4 5 3 5 4",
+					"",
+				}, "\n"),
+				"出力例 2": "3\n",
+				"入力例 3": strings.Join([]string{
+					"5",
+					"9 5 6 8 4",
+					"",
+				}, "\n"),
+				"出力例 3": "1\n",
+			},
+		},
+		{
+			name:            "success-old_DOM_structure",
+			inputProblemURL: dummyBaseURL + "/contests/abc002/tasks/abc002_2",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc002/tasks/abc002_2",
+			mockHTMLFile:    "abc002c.html",
+			expectedSampleElements: map[string]string{
+				"入力例 1": strings.Join([]string{
+					"1 0 3 0 2 5",
+					"",
+				}, "\n"),
+				"出力例 1": "5.0\n",
+				"入力例 2": strings.Join([]string{
+					"-1 -2 3 4 5 6",
+					"",
+				}, "\n"),
+				"出力例 2": "2.0\n",
+				"入力例 3": strings.Join([]string{
+					"298 520 903 520 4 663",
+					"",
+				}, "\n"),
+				"出力例 3": "43257.5\n",
+			},
+		},
+		{
+			name:            "success-only one sample",
+			inputProblemURL: dummyBaseURL + "/contests/kupc2015/tasks/kupc2015_a",
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/kupc2015/tasks/kupc2015_a",
+			mockHTMLFile:    "kupc2015a.html",
+			expectedSampleElements: map[string]string{
+				"入力例": strings.Join([]string{
+					"3",
+					"higashikyoto",
+					"kupconsitetokyotokyoto",
+					"goodluckandhavefun",
+					"",
+				}, "\n"),
+				"出力例": strings.Join([]string{
+					"1",
+					"2",
+					"0",
+					"",
+				}, "\n"),
+			},
+		},
+		{
+			name:            "failure-nonexistent_problem_URL",
+			inputProblemURL: dummyBaseURL + "/contests/xxx999/tasks/xxx999_x",
+			mockStatusCode:  http.StatusNotFound,
+			mockHTMLFile:    "xxx999x.html",
+			mockRequestPath: "contests/xxx999/tasks/xxx999_x",
+			expectedErrMsg:  "could not get HTML",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			html, err := ioutil.ReadFile(path.Join("testdata", test.mockHTMLFile))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			defer gock.Off()
+			gock.New(dummyBaseURL).
+				Get(test.mockRequestPath).
+				Reply(test.mockStatusCode).
+				AddHeader("Content-Type", "text/html").
+				BodyString(string(html))
+
+			c := &Client{}
+			sampleElements, err := c.fetchSampleElements(test.inputProblemURL)
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err)
+				}
+				if len(sampleElements) != len(test.expectedSampleElements) {
+					t.Fatalf("size of samples wrong. want=%d, got=%d", len(test.expectedSampleElements), len(sampleElements))
+				}
+				for key, expected := range test.expectedSampleElements {
+					actual, ok := sampleElements[key]
+					if !ok {
+						t.Fatalf("sample element for key %q does not exist", key)
+					}
+					if actual != expected {
+						t.Fatalf("sample element for key %q wrong. want=%+v, got=%+v", key, expected, actual)
+					}
+				}
+			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+				}
+			}
+		})
+	}
+}

@@ -1,7 +1,6 @@
 package atcoder
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -28,7 +27,7 @@ type mockInfo struct {
 	statusCode int
 }
 
-func TestClient_getProblemURL(t *testing.T) {
+func TestClient_GetProblemURL(t *testing.T) {
 	tests := []struct {
 		name string
 
@@ -99,8 +98,8 @@ func TestClient_getProblemURL(t *testing.T) {
 					Reply(mockInfo.statusCode)
 			}
 
-			c := &Client{baseURL: dummyBaseURL, contest: test.inputContest, problem: test.inputProblem}
-			problemURL, err := c.getProblemURL()
+			c := &Client{baseURL: dummyBaseURL}
+			problemURL, err := c.GetProblemURL(test.inputContest, test.inputProblem)
 			if test.expectedErrMsg == "" {
 				if err != nil {
 					t.Fatalf("err should be nil. got: %s", err)
@@ -115,40 +114,6 @@ func TestClient_getProblemURL(t *testing.T) {
 				if !strings.Contains(err.Error(), test.expectedErrMsg) {
 					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
 				}
-			}
-		})
-	}
-}
-
-func TestNewClient(t *testing.T) {
-	tests := []struct {
-		name string
-
-		inputContest      string
-		inputProblem      string
-		inputUseCache     bool
-		inputCacheDirPath string
-
-		expectedContest string
-		expectedProblem string
-	}{
-		{
-			name:            "success",
-			inputContest:    "ABC120",
-			inputProblem:    "C",
-			expectedContest: "abc120",
-			expectedProblem: "c",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			var outBuff, errBuff bytes.Buffer
-			c := NewClient(dummyBaseURL, test.inputContest, test.inputProblem, test.inputUseCache, test.inputCacheDirPath, &outBuff, &errBuff)
-			if c.contest != test.expectedContest {
-				t.Fatalf("contest wrong. want='%s', got='%s'", test.expectedContest, c.contest)
-			}
-			if c.problem != test.expectedProblem {
-				t.Fatalf("problem wrong. want='%s', got='%s'", test.expectedProblem, c.problem)
 			}
 		})
 	}

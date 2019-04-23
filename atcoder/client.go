@@ -78,17 +78,16 @@ func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
 		return nil, err
 	}
 
-	if c.useCache {
-		if err := c.cacheSamples(cacheFilePath, samples); err != nil {
-			_, _ = io.WriteString(c.errStream, err.Error())
-		}
+	if err := c.cacheSamples(cacheFilePath, samples); err != nil {
+		_, _ = io.WriteString(c.errStream, err.Error())
 	}
 
 	return samples, nil
 }
 
 func (c *Client) cacheFilePath(problemURL string) string {
-	filename := fmt.Sprintf("%s.json", problemURL)
+	escapedURL := strings.Replace(problemURL, "/", "_", -1)
+	filename := fmt.Sprintf("%s.json", escapedURL)
 	return path.Join(c.cacheDirPath, filename)
 }
 

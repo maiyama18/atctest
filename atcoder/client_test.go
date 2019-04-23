@@ -1,8 +1,12 @@
 package atcoder
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -12,12 +16,7 @@ import (
 
 const dummyBaseURL = "https://dummyatcoder.jp"
 
-//var dummyCacheDirPath = path.Join("testdata", "cache")
-//
-//var dummySamples = []Sample{
-//	{Input: "input1\n", Output: "output1\n"},
-//	{Input: "input2\n", Output: "output2\n"},
-//}
+var dummyCacheDirPath = path.Join("testdata", "cache")
 
 func TestClient_GetProblemURL(t *testing.T) {
 	tests := []struct {
@@ -126,6 +125,235 @@ func TestClient_GetProblemURL(t *testing.T) {
 				}
 				if !strings.Contains(err.Error(), test.expectedErrMsg) {
 					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+				}
+			}
+		})
+	}
+}
+
+func TestClient_GetSamples(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputProblemURL   string
+		inputUseCache     bool
+		inputCacheDirPath string
+
+		mockRequestPath string
+		mockStatusCode  int
+		mockHTMLFile    string
+
+		expectedSamples []Sample
+		expectedErrMsg  string
+	}{
+		{
+			name: "success-disable_cache",
+
+			inputProblemURL:   dummyBaseURL + "/contests/abc124/tasks/abc124_b",
+			inputUseCache:     false,
+			inputCacheDirPath: dummyCacheDirPath,
+
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc124/tasks/abc124_b",
+			mockHTMLFile:    "abc124b.html",
+
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"4",
+						"6 5 6 8",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"4 5 3 5 4",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"9 5 6 8 4",
+						"",
+					}, "\n"),
+					Output: "1\n",
+				},
+			},
+		},
+		{
+			name: "success-use_cache",
+
+			inputProblemURL:   dummyBaseURL + "/contests/abc124/tasks/abc124_b",
+			inputUseCache:     true,
+			inputCacheDirPath: dummyCacheDirPath,
+
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc124/tasks/abc124_b",
+			mockHTMLFile:    "abc124b.html",
+
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"4",
+						"6 5 6 8",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"4 5 3 5 4",
+						"",
+					}, "\n"),
+					Output: "3\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"5",
+						"9 5 6 8 4",
+						"",
+					}, "\n"),
+					Output: "1\n",
+				},
+			},
+		},
+		{
+			name: "success-old_DOM_structure",
+
+			inputProblemURL:   dummyBaseURL + "/contests/abc002/tasks/abc002_c",
+			inputUseCache:     false,
+			inputCacheDirPath: dummyCacheDirPath,
+
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/abc002/tasks/abc002_c",
+			mockHTMLFile:    "abc002c.html",
+
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"1 0 3 0 2 5",
+						"",
+					}, "\n"),
+					Output: "5.0\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"-1 -2 3 4 5 6",
+						"",
+					}, "\n"),
+					Output: "2.0\n",
+				},
+				{
+					Input: strings.Join([]string{
+						"298 520 903 520 4 663",
+						"",
+					}, "\n"),
+					Output: "43257.5\n",
+				},
+			},
+		},
+		{
+			name: "success-only_one_sample",
+
+			inputProblemURL:   dummyBaseURL + "/contests/kupc2015/tasks/kupc2015_a",
+			inputUseCache:     false,
+			inputCacheDirPath: dummyCacheDirPath,
+
+			mockStatusCode:  http.StatusOK,
+			mockRequestPath: "contests/kupc2015/tasks/kupc2015_a",
+			mockHTMLFile:    "kupc2015a.html",
+
+			expectedSamples: []Sample{
+				{
+					Input: strings.Join([]string{
+						"3",
+						"higashikyoto",
+						"kupconsitetokyotokyoto",
+						"goodluckandhavefun",
+						"",
+					}, "\n"),
+					Output: strings.Join([]string{
+						"1",
+						"2",
+						"0",
+						"",
+					}, "\n"),
+				},
+			},
+		},
+		{
+			name: "failure-nonexistent_problem",
+
+			inputProblemURL:   dummyBaseURL + "/contests/xxx999/tasks/xxx999_x",
+			inputUseCache:     false,
+			inputCacheDirPath: dummyCacheDirPath,
+
+			mockStatusCode:  http.StatusNotFound,
+			mockRequestPath: "contests/xxx999/tasks/xxx999_x",
+			mockHTMLFile:    "xxx999x.html",
+
+			expectedErrMsg: "could not get HTML",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			html, err := ioutil.ReadFile(path.Join("testdata", "problem", test.mockHTMLFile))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			defer gock.Off()
+			gock.New(dummyBaseURL).
+				Get(test.mockRequestPath).
+				Reply(test.mockStatusCode).
+				AddHeader("Content-Type", "text/html").
+				BodyString(string(html))
+
+			if test.inputUseCache {
+				if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
+					t.Fatalf("failed to create dummy cache dir: %s", err.Error())
+				}
+				b, err := json.Marshal(test.expectedSamples)
+				if err != nil {
+					t.Fatalf("failed to marshal samples: %s", err.Error())
+				}
+				escapedURL := strings.Replace(test.inputProblemURL, "/", "_", -1)
+				filename := fmt.Sprintf("%s.json", escapedURL)
+				if err := ioutil.WriteFile(path.Join(dummyCacheDirPath, filename), b, 0644); err != nil {
+					t.Fatalf("failed to create cache file: %s", err.Error())
+				}
+			}
+
+			var errBuff bytes.Buffer
+			c := &Client{baseURL: dummyBaseURL, useCache: test.inputUseCache, cacheDirPath: test.inputCacheDirPath, errStream: &errBuff}
+			samples, err := c.GetSamples(test.inputProblemURL)
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err.Error())
+				}
+				if errBuff.String() != "" {
+					t.Fatalf("errStream should be empty. got: %s", errBuff.String())
+				}
+				if len(samples) != len(test.expectedSamples) {
+					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
+				}
+				for i, expected := range test.expectedSamples {
+					actual := samples[i]
+					if actual != expected {
+						t.Fatalf("%d-th sample wrong.\nwant:\n%+v\ngot:\n%+v", i, expected, actual)
+					}
+				}
+			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("error message %q is expected to contain %q", err.Error(), test.expectedErrMsg)
 				}
 			}
 		})

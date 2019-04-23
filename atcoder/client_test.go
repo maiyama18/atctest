@@ -19,11 +19,6 @@ const dummyBaseURL = "https://dummyatcoder.jp"
 //	{Input: "input2\n", Output: "output2\n"},
 //}
 
-type mockInfo struct {
-	path       string
-	statusCode int
-}
-
 func TestClient_GetProblemURL(t *testing.T) {
 	tests := []struct {
 		name string

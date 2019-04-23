@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -21,8 +20,6 @@ type Sample struct {
 
 type Client struct {
 	baseURL string
-	contest string
-	problem string
 
 	useCache     bool
 	cacheDirPath string
@@ -31,11 +28,9 @@ type Client struct {
 	errStream io.Writer
 }
 
-func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath string, outStream, errStream io.Writer) *Client {
+func NewClient(baseURL string, useCache bool, cacheDirPath string, outStream, errStream io.Writer) *Client {
 	return &Client{
 		baseURL:      baseURL,
-		contest:      strings.ToLower(contest),
-		problem:      strings.ToLower(problem),
 		useCache:     useCache,
 		cacheDirPath: cacheDirPath,
 		outStream:    outStream,
@@ -43,17 +38,36 @@ func NewClient(baseURL, contest, problem string, useCache bool, cacheDirPath str
 	}
 }
 
-func (c *Client) GetSamples() ([]Sample, error) {
+func (c *Client) GetProblemURL(contest, problem string) (string, error) {
+	cl := colly.NewCollector()
+
+	var problemURL string
+	cl.OnHTML(`td > a[href]`, func(e *colly.HTMLElement) {
+		e.DOM.First()
+		if e.Text == strings.ToUpper(problem) {
+			problemURL = c.baseURL + e.Attr("href")
+		}
+	})
+
+	problemListURL := fmt.Sprintf("%s/contests/%s/tasks", c.baseURL, strings.ToLower(contest))
+	if err := cl.Visit(problemListURL); err != nil {
+		return "", fmt.Errorf("could not get HTML: %s", problemListURL)
+	}
+
+	if problemURL == "" {
+		return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", problem, contest)
+	}
+	return problemURL, nil
+}
+
+func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
+	cacheFilePath := c.cacheFilePath(problemURL)
 	if c.useCache {
-		if samples, ok := c.getCachedSamples(); ok {
+		if samples, ok := c.getCachedSamples(cacheFilePath); ok {
 			return samples, nil
 		}
 	}
 
-	problemURL, err := c.getProblemURL()
-	if err != nil {
-		return nil, err
-	}
 	elements, err := c.fetchSampleElements(problemURL)
 	if err != nil {
 		return nil, err
@@ -65,7 +79,7 @@ func (c *Client) GetSamples() ([]Sample, error) {
 	}
 
 	if c.useCache {
-		if err := c.cacheSamples(samples); err != nil {
+		if err := c.cacheSamples(cacheFilePath, samples); err != nil {
 			_, _ = io.WriteString(c.errStream, err.Error())
 		}
 	}
@@ -73,14 +87,18 @@ func (c *Client) GetSamples() ([]Sample, error) {
 	return samples, nil
 }
 
-func (c *Client) getCachedSamples() ([]Sample, bool) {
+func (c *Client) cacheFilePath(problemURL string) string {
+	filename := fmt.Sprintf("%s.json", problemURL)
+	return path.Join(c.cacheDirPath, filename)
+}
+
+func (c *Client) getCachedSamples(cacheFilePath string) ([]Sample, bool) {
 	_, err := os.Stat(c.cacheDirPath)
 	if err != nil {
 		return nil, false
 	}
 
-	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
-	bytes, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
+	bytes, err := ioutil.ReadFile(cacheFilePath)
 	if err != nil {
 		return nil, false
 	}
@@ -93,7 +111,7 @@ func (c *Client) getCachedSamples() ([]Sample, bool) {
 	return samples, true
 }
 
-func (c *Client) cacheSamples(samples []Sample) error {
+func (c *Client) cacheSamples(cacheFilePath string, samples []Sample) error {
 	_, err := os.Stat(c.cacheDirPath)
 	if os.IsNotExist(err) {
 		if err := os.MkdirAll(c.cacheDirPath, 0777); err != nil {
@@ -107,9 +125,8 @@ func (c *Client) cacheSamples(samples []Sample) error {
 	if err != nil {
 		return err
 	}
-	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
 
-	return ioutil.WriteFile(path.Join(c.cacheDirPath, filename), bytes, 0644)
+	return ioutil.WriteFile(cacheFilePath, bytes, 0644)
 }
 
 func (c *Client) fetchSampleElements(problemURL string) (map[string]string, error) {
@@ -174,48 +191,4 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 	}
 
 	return samples, nil
-}
-
-func (c *Client) getProblemURL() (string, error) {
-	// TODO: goroutine使って効率化
-	u1 := c.urlType1()
-	if isValidURL(u1) {
-		return u1, nil
-	}
-
-	u2 := c.urlType2()
-	if isValidURL(u2) {
-		return u2, nil
-	}
-
-	return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
-}
-
-func (c *Client) urlType1() string {
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, c.problem)
-}
-
-func (c *Client) urlType2() string {
-	problemStr, ok := map[string]string{
-		"a": "1",
-		"b": "2",
-		"c": "3",
-		"d": "4",
-		"e": "5",
-		"f": "6",
-	}[c.problem]
-	if !ok {
-		problemStr = "0"
-	}
-
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, c.contest, c.contest, problemStr)
-}
-
-func isValidURL(url string) bool {
-	resp, err := http.Get(url)
-	if err != nil {
-		return false
-	}
-
-	return resp.StatusCode == http.StatusOK
 }

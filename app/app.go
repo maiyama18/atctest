@@ -17,6 +17,9 @@ type App struct {
 	client  *atcoder.Client
 	checker *atcoder.Checker
 
+	contest string
+	problem string
+
 	outStream io.Writer
 	errStream io.Writer
 }
@@ -65,7 +68,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	} else {
 		cacheDirPath = path.Join(home, ".atctest")
 	}
-	client := atcoder.NewClient(baseURL, contest, problem, useCache, cacheDirPath, outStream, errStream)
+	client := atcoder.NewClient(baseURL, useCache, cacheDirPath, outStream, errStream)
 	if err != nil {
 		return nil, err
 	}
@@ -76,13 +79,21 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		client:  client,
 		checker: checker,
 
+		contest: contest,
+		problem: problem,
+
 		outStream: outStream,
 		errStream: errStream,
 	}, nil
 }
 
 func (a *App) Run() error {
-	samples, err := a.client.GetSamples()
+	problemURL, err := a.client.GetProblemURL(a.contest, a.problem)
+	if err != nil {
+		return err
+	}
+
+	samples, err := a.client.GetSamples(problemURL)
 	if err != nil {
 		return err
 	}

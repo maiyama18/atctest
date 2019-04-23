@@ -1,11 +1,8 @@
 package atcoder
 
 import (
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path"
 	"strings"
 	"testing"
@@ -15,12 +12,12 @@ import (
 
 const dummyBaseURL = "https://dummyatcoder.jp"
 
-var dummyCacheDirPath = path.Join("testdata", "cache")
-
-var dummySamples = []Sample{
-	{Input: "input1\n", Output: "output1\n"},
-	{Input: "input2\n", Output: "output2\n"},
-}
+//var dummyCacheDirPath = path.Join("testdata", "cache")
+//
+//var dummySamples = []Sample{
+//	{Input: "input1\n", Output: "output1\n"},
+//	{Input: "input2\n", Output: "output2\n"},
+//}
 
 type mockInfo struct {
 	path       string
@@ -34,69 +31,90 @@ func TestClient_GetProblemURL(t *testing.T) {
 		inputContest string
 		inputProblem string
 
-		mockInfos []mockInfo
+		mockRequestPath string
+		mockStatusCode  int
+		mockHTMLFile    string
 
 		expectedProblemURL string
 		expectedErrMsg     string
 	}{
 		{
-			name:         "success-url_type1",
-			inputContest: "abc120",
-			inputProblem: "c",
-			mockInfos: []mockInfo{
-				{"/contests/abc120/tasks/abc120_c", http.StatusOK},
-			},
-			expectedProblemURL: "https://dummyatcoder.jp/contests/abc120/tasks/abc120_c",
+			name:               "success-abc001",
+			inputContest:       "abc001",
+			inputProblem:       "C",
+			mockRequestPath:    "/contests/abc001/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "abc001.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/abc001/tasks/abc001_3",
 		},
 		{
-			name:         "success-url_type2",
-			inputContest: "abc002",
-			inputProblem: "c",
-			mockInfos: []mockInfo{
-				{"/contests/abc002/tasks/abc002_c", http.StatusNotFound},
-				{"/contests/abc002/tasks/abc002_3", http.StatusOK},
-			},
-			expectedProblemURL: "https://dummyatcoder.jp/contests/abc002/tasks/abc002_3",
+			name:               "success-abc001_case_mess",
+			inputContest:       "aBC001",
+			inputProblem:       "a",
+			mockRequestPath:    "/contests/abc001/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "abc001.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/abc001/tasks/abc001_1",
 		},
 		{
-			name:         "failure-nonexistent problem",
-			inputContest: "xxx999",
-			inputProblem: "x",
-			mockInfos: []mockInfo{
-				{"/contests/xxx999/tasks/xxx999_x", http.StatusNotFound},
-				{"/contests/xxx999/tasks/xxx999_0", http.StatusNotFound},
-			},
-			expectedErrMsg: "could not find problem page",
+			name:               "success-abc124",
+			inputContest:       "abc124",
+			inputProblem:       "B",
+			mockRequestPath:    "/contests/abc124/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "abc124.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/abc124/tasks/abc124_b",
 		},
 		{
-			name:         "failure-nonexistent contest",
-			inputContest: "xxx999",
-			inputProblem: "c",
-			mockInfos: []mockInfo{
-				{"/contests/xxx999/tasks/xxx999_c", http.StatusNotFound},
-				{"/contests/xxx999/tasks/xxx999_3", http.StatusNotFound},
-			},
-			expectedErrMsg: "could not find problem page",
+			name:               "success-agc032",
+			inputContest:       "agc032",
+			inputProblem:       "F",
+			mockRequestPath:    "/contests/agc032/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "agc032.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/agc032/tasks/agc032_f",
 		},
 		{
-			name:         "failure-nonexistent problem in existent contest",
-			inputContest: "abc120",
-			inputProblem: "x",
-			mockInfos: []mockInfo{
-				{"/contests/abc120/tasks/abc120_x", http.StatusNotFound},
-				{"/contests/abc120/tasks/abc120_0", http.StatusNotFound},
-			},
-			expectedErrMsg: "could not find problem page",
+			name:               "success-arc103",
+			inputContest:       "arc103",
+			inputProblem:       "E",
+			mockRequestPath:    "/contests/arc103/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "arc103.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/arc103/tasks/arc103_c",
+		},
+		{
+			name:               "success-tenka1_2019",
+			inputContest:       "tenka1-2019",
+			inputProblem:       "E",
+			mockRequestPath:    "/contests/tenka1-2019/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "tenka1-2019.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/tenka1-2019/tasks/tenka1_2019_e",
+		},
+		{
+			name:               "success-tenka1_2019",
+			inputContest:       "tenka1-2019",
+			inputProblem:       "E",
+			mockRequestPath:    "/contests/tenka1-2019/tasks",
+			mockStatusCode:     http.StatusOK,
+			mockHTMLFile:       "tenka1-2019.html",
+			expectedProblemURL: "https://dummyatcoder.jp/contests/tenka1-2019/tasks/tenka1_2019_e",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			defer gock.Off()
-			for _, mockInfo := range test.mockInfos {
-				gock.New(dummyBaseURL).
-					Get(mockInfo.path).
-					Reply(mockInfo.statusCode)
+			html, err := ioutil.ReadFile(path.Join("testdata", "problem_list", test.mockHTMLFile))
+			if err != nil {
+				t.Fatal(err)
 			}
+
+			defer gock.Off()
+			gock.New(dummyBaseURL).
+				Get(test.mockRequestPath).
+				Reply(test.mockStatusCode).
+				AddHeader("Content-Type", "text/html").
+				BodyString(string(html))
 
 			c := &Client{baseURL: dummyBaseURL}
 			problemURL, err := c.GetProblemURL(test.inputContest, test.inputProblem)
@@ -308,7 +326,7 @@ func TestClient_fetchSampleElements(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			html, err := ioutil.ReadFile(path.Join("testdata", test.mockHTMLFile))
+			html, err := ioutil.ReadFile(path.Join("testdata", "problem", test.mockHTMLFile))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -350,165 +368,165 @@ func TestClient_fetchSampleElements(t *testing.T) {
 	}
 }
 
-func TestClient_getCachedSamples(t *testing.T) {
-	tests := []struct {
-		name string
+//func TestClient_getCachedSamples(t *testing.T) {
+//	tests := []struct {
+//		name string
+//
+//		inputContest      string
+//		inputProblem      string
+//		inputCacheDirPath string
+//
+//		expectedSamples []Sample
+//		expectedSuccess bool
+//	}{
+//		{
+//			name:              "success",
+//			inputContest:      "abc120",
+//			inputProblem:      "c",
+//			inputCacheDirPath: dummyCacheDirPath,
+//			expectedSamples:   dummySamples,
+//			expectedSuccess:   true,
+//		},
+//		{
+//			name:              "failed-cache_dir_path_not_exist",
+//			inputContest:      "abc120",
+//			inputProblem:      "c",
+//			inputCacheDirPath: "/nonexistent",
+//			expectedSuccess:   false,
+//		},
+//	}
+//	for _, test := range tests {
+//		t.Run(test.name, func(t *testing.T) {
+//			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
+//				t.Fatalf("failed to create dummy cache dir: %s", err.Error())
+//			}
+//			b, err := json.Marshal(test.expectedSamples)
+//			if err != nil {
+//				t.Fatalf("failed to marshal samples: %s", err.Error())
+//			}
+//			filename := fmt.Sprintf("%s-%s.json", test.inputContest, test.inputProblem)
+//			if err := ioutil.WriteFile(path.Join(dummyCacheDirPath, filename), b, 0644); err != nil {
+//				t.Fatalf("failed to create cache file: %s", err.Error())
+//			}
+//
+//			defer func() {
+//				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
+//					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
+//				}
+//			}()
+//
+//			c := &Client{cacheDirPath: test.inputCacheDirPath}
+//			samples, ok := c.getCachedSamples()
+//			if test.expectedSuccess {
+//				if !ok {
+//					t.Fatalf("should success to get cache, but failed")
+//				}
+//
+//				if len(samples) != len(test.expectedSamples) {
+//					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
+//				}
+//				for i, expected := range test.expectedSamples {
+//					actual := samples[i]
+//					if actual != expected {
+//						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
+//					}
+//				}
+//			} else {
+//				if ok {
+//					t.Fatalf("should fail to get cache, but succeeded")
+//				}
+//			}
+//		})
+//	}
+//}
 
-		inputContest      string
-		inputProblem      string
-		inputCacheDirPath string
-
-		expectedSamples []Sample
-		expectedSuccess bool
-	}{
-		{
-			name:              "success",
-			inputContest:      "abc120",
-			inputProblem:      "c",
-			inputCacheDirPath: dummyCacheDirPath,
-			expectedSamples:   dummySamples,
-			expectedSuccess:   true,
-		},
-		{
-			name:              "failed-cache_dir_path_not_exist",
-			inputContest:      "abc120",
-			inputProblem:      "c",
-			inputCacheDirPath: "/nonexistent",
-			expectedSuccess:   false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
-				t.Fatalf("failed to create dummy cache dir: %s", err.Error())
-			}
-			b, err := json.Marshal(test.expectedSamples)
-			if err != nil {
-				t.Fatalf("failed to marshal samples: %s", err.Error())
-			}
-			filename := fmt.Sprintf("%s-%s.json", test.inputContest, test.inputProblem)
-			if err := ioutil.WriteFile(path.Join(dummyCacheDirPath, filename), b, 0644); err != nil {
-				t.Fatalf("failed to create cache file: %s", err.Error())
-			}
-
-			defer func() {
-				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
-					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
-				}
-			}()
-
-			c := &Client{contest: test.inputContest, problem: test.inputProblem, cacheDirPath: test.inputCacheDirPath}
-			samples, ok := c.getCachedSamples()
-			if test.expectedSuccess {
-				if !ok {
-					t.Fatalf("should success to get cache, but failed")
-				}
-
-				if len(samples) != len(test.expectedSamples) {
-					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.expectedSamples), len(samples))
-				}
-				for i, expected := range test.expectedSamples {
-					actual := samples[i]
-					if actual != expected {
-						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
-					}
-				}
-			} else {
-				if ok {
-					t.Fatalf("should fail to get cache, but succeeded")
-				}
-			}
-		})
-	}
-}
-
-func TestClient_cacheSamples(t *testing.T) {
-	tests := []struct {
-		name string
-
-		inputContest      string
-		inputProblem      string
-		inputCacheDirPath string
-		inputSamples      []Sample
-
-		expectedErrMsg string
-	}{
-		{
-			name:              "success",
-			inputContest:      "abc120",
-			inputProblem:      "c",
-			inputCacheDirPath: dummyCacheDirPath,
-			inputSamples: []Sample{
-				{Input: "input1\n", Output: "output1\n"},
-				{Input: "input2\n", Output: "output2\n"},
-			},
-		},
-		{
-			name:              "success-cache_dir_not_exist",
-			inputContest:      "abc120",
-			inputProblem:      "c",
-			inputCacheDirPath: path.Join("testdata", "new_cache_dir"),
-			inputSamples:      dummySamples,
-		},
-		{
-			name:              "failed-cache_dir_failed_no_permission",
-			inputContest:      "abc120",
-			inputProblem:      "c",
-			inputCacheDirPath: path.Join("/sys", "new_cache_dir"),
-			inputSamples:      dummySamples,
-			expectedErrMsg:    "permission denied",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
-				t.Fatal("failed to create dummy cache dir")
-			}
-			defer func() {
-				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
-					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
-				}
-				if test.inputCacheDirPath != dummyCacheDirPath {
-					if err := os.RemoveAll(test.inputCacheDirPath); err != nil {
-						t.Fatalf("failed to remove cache dir after test: %s", test.inputCacheDirPath)
-					}
-				}
-			}()
-
-			c := &Client{contest: test.inputContest, problem: test.inputProblem, cacheDirPath: test.inputCacheDirPath}
-			err := c.cacheSamples(test.inputSamples)
-			if test.expectedErrMsg == "" {
-				if err != nil {
-					t.Fatalf("err should be nil. got: %s", err)
-				}
-
-				filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
-				b, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
-				if err != nil {
-					t.Fatalf("failed to read cached file")
-				}
-				var samples []Sample
-				if err := json.Unmarshal(b, &samples); err != nil {
-					t.Fatalf("failed to unmarshal samples")
-				}
-
-				if len(samples) != len(test.inputSamples) {
-					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.inputSamples), len(samples))
-				}
-				for i, expected := range test.inputSamples {
-					actual := samples[i]
-					if actual != expected {
-						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
-					}
-				}
-			} else {
-				if err == nil {
-					t.Fatal("err should not be nil. got: nil")
-				}
-				if !strings.Contains(err.Error(), test.expectedErrMsg) {
-					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
-				}
-			}
-		})
-	}
-}
+//func TestClient_cacheSamples(t *testing.T) {
+//	tests := []struct {
+//		name string
+//
+//		inputContest      string
+//		inputProblem      string
+//		inputCacheDirPath string
+//		inputSamples      []Sample
+//
+//		expectedErrMsg string
+//	}{
+//		{
+//			name:              "success",
+//			inputContest:      "abc120",
+//			inputProblem:      "c",
+//			inputCacheDirPath: dummyCacheDirPath,
+//			inputSamples: []Sample{
+//				{Input: "input1\n", Output: "output1\n"},
+//				{Input: "input2\n", Output: "output2\n"},
+//			},
+//		},
+//		{
+//			name:              "success-cache_dir_not_exist",
+//			inputContest:      "abc120",
+//			inputProblem:      "c",
+//			inputCacheDirPath: path.Join("testdata", "new_cache_dir"),
+//			inputSamples:      dummySamples,
+//		},
+//		{
+//			name:              "failed-cache_dir_failed_no_permission",
+//			inputContest:      "abc120",
+//			inputProblem:      "c",
+//			inputCacheDirPath: path.Join("/sys", "new_cache_dir"),
+//			inputSamples:      dummySamples,
+//			expectedErrMsg:    "permission denied",
+//		},
+//	}
+//	for _, test := range tests {
+//		t.Run(test.name, func(t *testing.T) {
+//			if err := os.MkdirAll(dummyCacheDirPath, 0777); err != nil {
+//				t.Fatal("failed to create dummy cache dir")
+//			}
+//			defer func() {
+//				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
+//					t.Fatalf("failed to remove dummy cache dir after test: %s", dummyCacheDirPath)
+//				}
+//				if test.inputCacheDirPath != dummyCacheDirPath {
+//					if err := os.RemoveAll(test.inputCacheDirPath); err != nil {
+//						t.Fatalf("failed to remove cache dir after test: %s", test.inputCacheDirPath)
+//					}
+//				}
+//			}()
+//
+//			c := &Client{cacheDirPath: test.inputCacheDirPath}
+//			err := c.cacheSamples(test.inputSamples)
+//			if test.expectedErrMsg == "" {
+//				if err != nil {
+//					t.Fatalf("err should be nil. got: %s", err)
+//				}
+//
+//				filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
+//				b, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
+//				if err != nil {
+//					t.Fatalf("failed to read cached file")
+//				}
+//				var samples []Sample
+//				if err := json.Unmarshal(b, &samples); err != nil {
+//					t.Fatalf("failed to unmarshal samples")
+//				}
+//
+//				if len(samples) != len(test.inputSamples) {
+//					t.Fatalf("length of samples wrong. want=%d, got=%d", len(test.inputSamples), len(samples))
+//				}
+//				for i, expected := range test.inputSamples {
+//					actual := samples[i]
+//					if actual != expected {
+//						t.Fatalf("%d-th sample wrong. want=%+v, got=%+v", i, expected, actual)
+//					}
+//				}
+//			} else {
+//				if err == nil {
+//					t.Fatal("err should not be nil. got: nil")
+//				}
+//				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+//					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+//				}
+//			}
+//		})
+//	}
+//}

@@ -20,8 +20,6 @@ type Sample struct {
 
 type Client struct {
 	baseURL string
-	contest string
-	problem string
 
 	useCache     bool
 	cacheDirPath string
@@ -57,14 +55,15 @@ func (c *Client) GetProblemURL(contest, problem string) (string, error) {
 	}
 
 	if problemURL == "" {
-		return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
+		return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", problem, contest)
 	}
 	return problemURL, nil
 }
 
 func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
+	cacheFilePath := c.cacheFilePath(problemURL)
 	if c.useCache {
-		if samples, ok := c.getCachedSamples(); ok {
+		if samples, ok := c.getCachedSamples(cacheFilePath); ok {
 			return samples, nil
 		}
 	}
@@ -80,7 +79,7 @@ func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
 	}
 
 	if c.useCache {
-		if err := c.cacheSamples(samples); err != nil {
+		if err := c.cacheSamples(cacheFilePath, samples); err != nil {
 			_, _ = io.WriteString(c.errStream, err.Error())
 		}
 	}
@@ -88,14 +87,18 @@ func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
 	return samples, nil
 }
 
-func (c *Client) getCachedSamples() ([]Sample, bool) {
+func (c *Client) cacheFilePath(problemURL string) string {
+	filename := fmt.Sprintf("%s.json", problemURL)
+	return path.Join(c.cacheDirPath, filename)
+}
+
+func (c *Client) getCachedSamples(cacheFilePath string) ([]Sample, bool) {
 	_, err := os.Stat(c.cacheDirPath)
 	if err != nil {
 		return nil, false
 	}
 
-	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
-	bytes, err := ioutil.ReadFile(path.Join(c.cacheDirPath, filename))
+	bytes, err := ioutil.ReadFile(cacheFilePath)
 	if err != nil {
 		return nil, false
 	}
@@ -108,7 +111,7 @@ func (c *Client) getCachedSamples() ([]Sample, bool) {
 	return samples, true
 }
 
-func (c *Client) cacheSamples(samples []Sample) error {
+func (c *Client) cacheSamples(cacheFilePath string, samples []Sample) error {
 	_, err := os.Stat(c.cacheDirPath)
 	if os.IsNotExist(err) {
 		if err := os.MkdirAll(c.cacheDirPath, 0777); err != nil {
@@ -122,9 +125,8 @@ func (c *Client) cacheSamples(samples []Sample) error {
 	if err != nil {
 		return err
 	}
-	filename := fmt.Sprintf("%s-%s.json", c.contest, c.problem)
 
-	return ioutil.WriteFile(path.Join(c.cacheDirPath, filename), bytes, 0644)
+	return ioutil.WriteFile(cacheFilePath, bytes, 0644)
 }
 
 func (c *Client) fetchSampleElements(problemURL string) (map[string]string, error) {

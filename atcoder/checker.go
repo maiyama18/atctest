@@ -9,23 +9,23 @@ import (
 )
 
 type Checker struct {
-	command   commander.Commander
+	commander commander.Commander
 	outStream io.Writer
 	errStream io.Writer
 }
 
-func NewChecker(rawCommand string, outStream, errStream io.Writer) *Checker {
+func NewChecker(outStream, errStream io.Writer) *Checker {
 	return &Checker{
-		command:   commander.NewExternal(rawCommand),
+		commander: commander.NewExternal(),
 		outStream: outStream,
 		errStream: errStream,
 	}
 }
 
-func (c *Checker) Check(samples []Sample) bool {
+func (c *Checker) Check(command string, samples []Sample) bool {
 	successAll := true
 	for i, sample := range samples {
-		success, actual, err := c.checkOne(sample)
+		success, actual, err := c.checkOne(command, sample)
 		_, _ = fmt.Fprintf(c.outStream, "sample %d: ", i+1)
 		if err != nil {
 			successAll = false
@@ -50,8 +50,8 @@ func (c *Checker) Check(samples []Sample) bool {
 	return successAll
 }
 
-func (c *Checker) checkOne(sample Sample) (bool, string, error) {
-	actualOutput, err := c.command.Run(sample.Input)
+func (c *Checker) checkOne(command string, sample Sample) (bool, string, error) {
+	actualOutput, err := c.commander.Run(command, sample.Input)
 	if err != nil {
 		return false, "", err
 	}

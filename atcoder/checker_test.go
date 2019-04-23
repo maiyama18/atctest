@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+const dummyRawCommand = "hello"
+
 func TestChecker_Check(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -72,11 +74,11 @@ func TestChecker_Check(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			var outStream bytes.Buffer
 			c := &Checker{
-				command:   &testCommander{index: 0, results: test.mockResults},
+				commander: &testCommander{index: 0, results: test.mockResults},
 				outStream: &outStream,
 			}
 
-			actualSuccess := c.Check(test.inputSamples)
+			actualSuccess := c.Check(dummyRawCommand, test.inputSamples)
 			if actualSuccess != test.expectedSuccess {
 				t.Fatalf("success wrong. want=%t, got=%t", test.expectedSuccess, actualSuccess)
 			}
@@ -97,7 +99,7 @@ type testCommander struct {
 	results []commandResult
 }
 
-func (t *testCommander) Run(stdin string) (string, error) {
+func (t *testCommander) Run(command, stdin string) (string, error) {
 	if t.index >= len(t.results) {
 		panic("index of testCommander out of range")
 	}

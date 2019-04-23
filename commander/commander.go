@@ -8,27 +8,21 @@ import (
 )
 
 type Commander interface {
-	Run(stdin string) (string, error)
+	Run(rawCommand, stdin string) (string, error)
 }
 
 type External struct {
 	command *exec.Cmd
 }
 
-func NewExternal(rawCommand string) *External {
-	fields := strings.Fields(rawCommand)
-	name := fields[0]
-	args := fields[1:]
-
-	return &External{
-		command: exec.Command(name, args...),
-	}
+func NewExternal() *External {
+	return &External{}
 }
 
-func (e *External) Run(stdin string) (string, error) {
+func (e *External) Run(rawCommand, stdin string) (string, error) {
 	var errBuf bytes.Buffer
 
-	cmd := *e.command
+	cmd := NewCommand(rawCommand)
 	cmd.Stdin = strings.NewReader(stdin)
 	cmd.Stderr = &errBuf
 
@@ -37,4 +31,12 @@ func (e *External) Run(stdin string) (string, error) {
 		return "", fmt.Errorf("%s: %s", err.Error(), errBuf.String())
 	}
 	return string(out), nil
+}
+
+func NewCommand(rawCommand string) *exec.Cmd {
+	fields := strings.Fields(rawCommand)
+	name := fields[0]
+	args := fields[1:]
+
+	return exec.Command(name, args...)
 }

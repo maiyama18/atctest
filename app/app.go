@@ -19,6 +19,7 @@ type App struct {
 
 	contest string
 	problem string
+	command string
 
 	outStream io.Writer
 	errStream io.Writer
@@ -73,7 +74,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		return nil, err
 	}
 
-	checker := atcoder.NewChecker(command, outStream, errStream)
+	checker := atcoder.NewChecker(outStream, errStream)
 
 	return &App{
 		client:  client,
@@ -81,6 +82,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 
 		contest: contest,
 		problem: problem,
+		command: command,
 
 		outStream: outStream,
 		errStream: errStream,
@@ -98,7 +100,7 @@ func (a *App) Run() error {
 		return err
 	}
 
-	if success := a.checker.Check(samples); !success {
+	if success := a.checker.Check(a.command, samples); !success {
 		return err
 	}
 

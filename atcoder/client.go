@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -42,19 +41,25 @@ func NewClient(baseURL string, useCache bool, cacheDirPath string, outStream, er
 }
 
 func (c *Client) GetProblemURL(contest, problem string) (string, error) {
-	lowerContest := strings.ToLower(contest)
-	lowerProblem := strings.ToLower(problem)
-	u1 := c.urlType1(lowerContest, lowerProblem)
-	if isValidURL(u1) {
-		return u1, nil
+	cl := colly.NewCollector()
+
+	var problemURL string
+	cl.OnHTML(`td > a[href]`, func(e *colly.HTMLElement) {
+		e.DOM.First()
+		if e.Text == strings.ToUpper(problem) {
+			problemURL = c.baseURL + e.Attr("href")
+		}
+	})
+
+	problemListURL := fmt.Sprintf("%s/contests/%s/tasks", c.baseURL, strings.ToLower(contest))
+	if err := cl.Visit(problemListURL); err != nil {
+		return "", fmt.Errorf("could not get HTML: %s", problemListURL)
 	}
 
-	u2 := c.urlType2(lowerContest, lowerProblem)
-	if isValidURL(u2) {
-		return u2, nil
+	if problemURL == "" {
+		return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
 	}
-
-	return "", fmt.Errorf("could not find problem page for problem '%s' of contest '%s'", c.problem, c.contest)
+	return problemURL, nil
 }
 
 func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
@@ -184,33 +189,4 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 	}
 
 	return samples, nil
-}
-
-func (c *Client) urlType1(contest, problem string) string {
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contest, contest, problem)
-}
-
-func (c *Client) urlType2(contest, problem string) string {
-	problemStr, ok := map[string]string{
-		"a": "1",
-		"b": "2",
-		"c": "3",
-		"d": "4",
-		"e": "5",
-		"f": "6",
-	}[problem]
-	if !ok {
-		problemStr = "0"
-	}
-
-	return fmt.Sprintf("%s/contests/%s/tasks/%s_%s", c.baseURL, contest, contest, problemStr)
-}
-
-func isValidURL(url string) bool {
-	resp, err := http.Get(url)
-	if err != nil {
-		return false
-	}
-
-	return resp.StatusCode == http.StatusOK
 }

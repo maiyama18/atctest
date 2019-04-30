@@ -372,10 +372,10 @@ func TestClient_constructSamples(t *testing.T) {
 		{
 			name: "success-multiple_samples",
 			inputElements: map[string]string{
-				"入力例 1": "1 3 5\n",
-				"出力例 1": "9\n",
-				"入力例 2": "2 4\n",
-				"出力例 2": "6\n",
+				"入力例1": "1 3 5\n",
+				"出力例1": "9\n",
+				"入力例2": "2 4\n",
+				"出力例2": "6\n",
 			},
 			expectedSamples: []Sample{
 				{Input: "1 3 5\n", Output: "9\n"},
@@ -400,27 +400,27 @@ func TestClient_constructSamples(t *testing.T) {
 		{
 			name: "failure-numbers_of_elements_odd",
 			inputElements: map[string]string{
-				"入力例 1": "1 3 5\n",
-				"出力例 1": "9\n",
-				"入力例 2": "2 4\n",
+				"入力例1": "1 3 5\n",
+				"出力例1": "9\n",
+				"入力例2": "2 4\n",
 			},
 			expectedErrMsg: "number of sample elements should be even",
 		},
 		{
 			name: "failure-index_of_入力例_wrong",
 			inputElements: map[string]string{
-				"入力例 2": "1 3 5\n",
-				"出力例 1": "9\n",
+				"入力例2": "1 3 5\n",
+				"出力例1": "9\n",
 			},
-			expectedErrMsg: "could not find '入力例 1'",
+			expectedErrMsg: "could not find '入力例1'",
 		},
 		{
 			name: "failure-index_of_出力例_wrong",
 			inputElements: map[string]string{
-				"入力例 1": "1 3 5\n",
-				"出力例 2": "9\n",
+				"入力例1": "1 3 5\n",
+				"出力例2": "9\n",
 			},
-			expectedErrMsg: "could not find '出力例 1'",
+			expectedErrMsg: "could not find '出力例1'",
 		},
 	}
 	for _, test := range tests {
@@ -472,24 +472,24 @@ func TestClient_fetchSampleElements(t *testing.T) {
 			mockRequestPath: "contests/abc124/tasks/abc124_b",
 			mockHTMLFile:    "abc124b.html",
 			expectedSampleElements: map[string]string{
-				"入力例 1": strings.Join([]string{
+				"入力例1": strings.Join([]string{
 					"4",
 					"6 5 6 8",
 					"",
 				}, "\n"),
-				"出力例 1": "3\n",
-				"入力例 2": strings.Join([]string{
+				"出力例1": "3\n",
+				"入力例2": strings.Join([]string{
 					"5",
 					"4 5 3 5 4",
 					"",
 				}, "\n"),
-				"出力例 2": "3\n",
-				"入力例 3": strings.Join([]string{
+				"出力例2": "3\n",
+				"入力例3": strings.Join([]string{
 					"5",
 					"9 5 6 8 4",
 					"",
 				}, "\n"),
-				"出力例 3": "1\n",
+				"出力例3": "1\n",
 			},
 		},
 		{
@@ -499,21 +499,21 @@ func TestClient_fetchSampleElements(t *testing.T) {
 			mockRequestPath: "contests/abc002/tasks/abc002_2",
 			mockHTMLFile:    "abc002c.html",
 			expectedSampleElements: map[string]string{
-				"入力例 1": strings.Join([]string{
+				"入力例1": strings.Join([]string{
 					"1 0 3 0 2 5",
 					"",
 				}, "\n"),
-				"出力例 1": "5.0\n",
-				"入力例 2": strings.Join([]string{
+				"出力例1": "5.0\n",
+				"入力例2": strings.Join([]string{
 					"-1 -2 3 4 5 6",
 					"",
 				}, "\n"),
-				"出力例 2": "2.0\n",
-				"入力例 3": strings.Join([]string{
+				"出力例2": "2.0\n",
+				"入力例3": strings.Join([]string{
 					"298 520 903 520 4 663",
 					"",
 				}, "\n"),
-				"出力例 3": "43257.5\n",
+				"出力例3": "43257.5\n",
 			},
 		},
 		{

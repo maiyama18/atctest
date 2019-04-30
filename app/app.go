@@ -21,6 +21,8 @@ type App struct {
 	problem string
 	command string
 
+	problemURL string
+
 	outStream io.Writer
 	errStream io.Writer
 }
@@ -35,30 +37,34 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	}
 
 	var (
-		contest string
-		problem string
-		command string
-		nocache bool
+		contest    string
+		problem    string
+		command    string
+		problemURL string
+		nocache    bool
 	)
 	flags.StringVar(&contest, "contest", "", "contest you are challenging. e.g.) ABC051")
 	flags.StringVar(&problem, "problem", "", "problem you are solving. e.g.) C")
 	flags.StringVar(&command, "command", "", "command to execute your program. e.g.) 'python c.py'")
+	flags.StringVar(&problemURL, "url", "", "url of the problem page. e.g.) 'https://abc051.contest.atcoder.jp/tasks/abc051_c'")
 	flags.BoolVar(&nocache, "nocache", false, "if set, local cache of samples is not used.")
 	if err := flags.Parse(args[1:]); err != nil {
 		return nil, errors.New("failed to parse flags")
 	}
 
-	if contest == "" {
-		flags.Usage()
-		return nil, errors.New("specify the contest you are challenging. e.g.) ABC051")
-	}
-	if problem == "" {
-		flags.Usage()
-		return nil, errors.New("specify the problem you are solving. e.g.) C")
-	}
-	if command == "" {
-		flags.Usage()
-		return nil, errors.New("specify the command to execute your program. e.g.) 'python c.py'")
+	if problemURL == "" {
+		if contest == "" {
+			flags.Usage()
+			return nil, errors.New("specify the contest you are challenging. e.g.) ABC051")
+		}
+		if problem == "" {
+			flags.Usage()
+			return nil, errors.New("specify the problem you are solving. e.g.) C")
+		}
+		if command == "" {
+			flags.Usage()
+			return nil, errors.New("specify the command to execute your program. e.g.) 'python c.py'")
+		}
 	}
 
 	useCache := !nocache
@@ -84,15 +90,23 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		problem: problem,
 		command: command,
 
+		problemURL: problemURL,
+
 		outStream: outStream,
 		errStream: errStream,
 	}, nil
 }
 
 func (a *App) Run() error {
-	problemURL, err := a.client.GetProblemURL(a.contest, a.problem)
-	if err != nil {
-		return err
+	var problemURL string
+	if a.problemURL != "" {
+		problemURL = a.problemURL
+	} else {
+		var err error
+		problemURL, err = a.client.GetProblemURL(a.contest, a.problem)
+		if err != nil {
+			return err
+		}
 	}
 
 	samples, err := a.client.GetSamples(problemURL)

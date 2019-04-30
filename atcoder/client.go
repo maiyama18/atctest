@@ -135,11 +135,13 @@ func (c *Client) fetchSampleElements(problemURL string) (map[string]string, erro
 	cl.OnHTML(`pre`, func(e *colly.HTMLElement) {
 		title := e.DOM.Parent().Find("h3").Text()
 		if strings.HasPrefix(title, "入力例") || strings.HasPrefix(title, "出力例") {
-			elements[title] = e.Text
+			titleKey := strings.Replace(title, " ", "", -1)
+			elements[titleKey] = e.Text
 		} else {
 			title := e.DOM.Parent().Parent().Find("h3").Text()
 			if strings.HasPrefix(title, "入力例") || strings.HasPrefix(title, "出力例") {
-				elements[title] = e.Text
+				titleKey := strings.Replace(title, " ", "", -1)
+				elements[titleKey] = e.Text
 			}
 		}
 	})
@@ -174,8 +176,8 @@ func (c *Client) constructSamples(elements map[string]string) ([]Sample, error) 
 
 	// for html which has pairs of samples with numbering ["入力例 1", "出力例 1", "入力例 2", ...]
 	for i := 1; i <= numSamples; i++ {
-		inputKey := fmt.Sprintf("入力例 %d", i)
-		outputKey := fmt.Sprintf("出力例 %d", i)
+		inputKey := fmt.Sprintf("入力例%d", i)
+		outputKey := fmt.Sprintf("出力例%d", i)
 
 		input, ok := elements[inputKey]
 		if !ok {

@@ -17,6 +17,10 @@ func TestNew(t *testing.T) {
 			inputArgs: strings.Fields("atctest -contest ABC051 -problem C -command 'python c.py'"),
 		},
 		{
+			name:      "success-with url",
+			inputArgs: strings.Fields("atctest -url 'https://abc051.contest.atcoder.jp/tasks/abc051_c'"),
+		},
+		{
 			name:           "failure-unknown option exists",
 			inputArgs:      strings.Fields("atctest -hello world -problem C -command 'python c.py'"),
 			expectedErrMsg: "failed to parse flags",

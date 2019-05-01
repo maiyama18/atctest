@@ -11,6 +11,8 @@ $ go get -u github.com/mui87/atctest
 
 ## usage
 
+### command
+
 #### specify contest/problem/command
 
 ```bash
@@ -28,6 +30,8 @@ $ atctest -url 'https://atcoder.jp/contests/abc087/tasks/abc087_a' -command 'rub
 ```bash
 $ atctest -contest ABC087 -problem A -command 'g++ abc/087/a.cpp; ./a.out'
 ```
+
+### results
 
 #### success case
 

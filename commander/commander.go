@@ -32,9 +32,5 @@ func (e *External) Run(rawCommand, stdin string) (string, error) {
 }
 
 func NewCommand(rawCommand string) *exec.Cmd {
-	fields := strings.Fields(rawCommand)
-	name := fields[0]
-	args := fields[1:]
-
-	return exec.Command(name, args...)
+	return exec.Command("/bin/bash", "-c", rawCommand)
 }

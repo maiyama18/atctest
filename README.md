@@ -11,8 +11,22 @@ $ go get -u github.com/mui87/atctest
 
 ## usage
 
+#### specify contest/problem/command
+
 ```bash
 $ atctest -contest ABC087 -problem A -command 'ruby abc/087/a.rb'
+```
+
+#### specify problem url/command
+
+```bash
+$ atctest -url 'https://atcoder.jp/contests/abc087/tasks/abc087_a' -command 'ruby abc/087/a.rb'
+```
+
+#### multiple commands (useful when using compile languages)
+
+```bash
+$ atctest -contest ABC087 -problem A -command 'g++ abc/087/a.cpp; ./a.out'
 ```
 
 #### success case

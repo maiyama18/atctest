@@ -302,6 +302,12 @@ func TestClient_GetSamples(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			defer func() {
+				if err := os.RemoveAll(dummyCacheDirPath); err != nil {
+					t.Fatalf("failed to remove dummy cache dir: %s", err.Error())
+				}
+			}()
+
 			html, err := ioutil.ReadFile(path.Join("testdata", "problem", test.mockHTMLFile))
 			if err != nil {
 				t.Fatal(err)

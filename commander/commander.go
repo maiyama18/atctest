@@ -11,9 +11,7 @@ type Commander interface {
 	Run(rawCommand, stdin string) (string, error)
 }
 
-type External struct {
-	command *exec.Cmd
-}
+type External struct{}
 
 func NewExternal() *External {
 	return &External{}

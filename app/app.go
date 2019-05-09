@@ -121,12 +121,12 @@ func (a *App) Run() error {
 	return nil
 }
 
-const helpMessage = `
-atctest is a command line tool for AtCoder.
+const helpMessage = `atctest is a command line tool for AtCoder.
 it checks if your program correctly solve the samples provided on the problem page.
 
 EXAMPLE: 
 $ atctest -contest ABC051 -problem C -command 'python c.py'
+$ atctest -url 'https://atcoder.jp/contests/abc051/tasks/abc051_c' -command 'g++ c.cpp; ./a.out'
 
 OPTION:
 `

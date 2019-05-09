@@ -31,9 +31,9 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	flags := flag.NewFlagSet("atctest", flag.ContinueOnError)
 	flags.SetOutput(errStream)
 	flags.Usage = func() {
-		_, _ = fmt.Fprintf(errStream, helpMessage)
+		_, _ = fmt.Fprintln(errStream, helpMessage)
 		flags.PrintDefaults()
-		_, _ = fmt.Fprintf(errStream, "")
+		_, _ = fmt.Fprintln(errStream, "")
 	}
 
 	var (
@@ -128,5 +128,4 @@ EXAMPLE:
 $ atctest -contest ABC051 -problem C -command 'python c.py'
 $ atctest -url 'https://atcoder.jp/contests/abc051/tasks/abc051_c' -command 'g++ c.cpp; ./a.out'
 
-OPTION:
-`
+OPTION:`

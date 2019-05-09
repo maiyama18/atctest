@@ -6,10 +6,10 @@ it checks if your program correctly solves the problem for the sample inputs pro
 ## installation
 
 ```bash
-// with go get
+# with go get
 $ go get -u github.com/mui87/atctest
 
-// with homebrew
+# with homebrew
 $ brew tap mui87/atctest
 $ brew install atctest
 ```

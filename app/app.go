@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bytes"
 	"errors"
 	"flag"
 	"fmt"
@@ -28,12 +29,13 @@ type App struct {
 }
 
 func New(args []string, outStream, errStream io.Writer) (*App, error) {
+	var errBuff bytes.Buffer
+
 	flags := flag.NewFlagSet("atctest", flag.ContinueOnError)
-	flags.SetOutput(errStream)
+	flags.SetOutput(&errBuff)
 	flags.Usage = func() {
-		_, _ = fmt.Fprintln(errStream, helpMessage)
+		_, _ = fmt.Fprintln(&errBuff, helpMessage)
 		flags.PrintDefaults()
-		_, _ = fmt.Fprintln(errStream, "")
 	}
 
 	var (
@@ -55,7 +57,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 	if problemURL == "" {
 		if contest == "" {
 			flags.Usage()
-			return nil, errors.New("specify the contest you are challenging. e.g.) ABC051")
+			return nil, fmt.Errorf("specify the contest you are challenging. e.g.) ABC051\n\n%s", errBuff.String())
 		}
 		if problem == "" {
 			flags.Usage()

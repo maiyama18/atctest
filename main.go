@@ -13,16 +13,20 @@ const (
 )
 
 func main() {
+	os.Exit(run())
+}
+
+func run() int {
 	a, err := app.New(os.Args, os.Stdout, os.Stderr)
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(exitCodeErr)
+		_, _ = fmt.Fprintln(os.Stderr, "[ERROR] "+err.Error())
+		return exitCodeErr
 	}
 
 	if err := a.Run(); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(exitCodeErr)
+		_, _ = fmt.Fprintln(os.Stderr, "[ERROR] "+err.Error())
+		return exitCodeErr
 	}
 
-	os.Exit(exitCodeOK)
+	return exitCodeOK
 }

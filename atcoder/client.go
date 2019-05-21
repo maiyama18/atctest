@@ -53,6 +53,46 @@ func (c *Client) IsContestBeingHeld(contestURL string) (bool, error) {
 	return beingHeld, nil
 }
 
+func (c *Client) LogIn(username, password string) error {
+	if username == "" || password == "" {
+		return errors.New("you need to provide username and password as command line options to test for the contest being held")
+	}
+
+	var (
+		csrfToken string
+		loginErr  error
+	)
+	loginURL := c.baseURL + "/login"
+
+	c.collector.OnHTML(`input[name="csrf_token"]`, func(e *colly.HTMLElement) {
+		if csrfToken != "" {
+			return
+		}
+
+		csrfToken, _ = e.DOM.Attr("value")
+		reqBody := map[string]string{
+			"username":   username,
+			"password":   password,
+			"csrf_token": csrfToken,
+		}
+
+		if err := c.collector.Post(loginURL, reqBody); err != nil {
+			loginErr = fmt.Errorf("login error: %s", err)
+			return
+		}
+		if !c.isLoggedIn(username) {
+			loginErr = fmt.Errorf("login error: username/password may be wrong")
+			return
+		}
+	})
+
+	if err := c.collector.Visit(loginURL); err != nil {
+		return fmt.Errorf("could not get HTML: %s", loginURL)
+	}
+
+	return loginErr
+}
+
 func (c *Client) GetProblemURL(contest, problem string) (string, error) {
 	var problemURL string
 	c.collector.OnHTML(`td > a[href]`, func(e *colly.HTMLElement) {
@@ -96,6 +136,15 @@ func (c *Client) GetSamples(problemURL string) ([]Sample, error) {
 	}
 
 	return samples, nil
+}
+
+func (c *Client) isLoggedIn(username string) bool {
+	for _, c := range c.collector.Cookies(c.baseURL) {
+		if strings.Contains(c.Value, "UserScreenName%3A"+username) {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Client) cacheFilePath(problemURL string) string {

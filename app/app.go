@@ -23,6 +23,9 @@ type App struct {
 	problem string
 	command string
 
+	username string
+	password string
+
 	contestURL string
 	problemURL string
 
@@ -44,12 +47,16 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		contest    string
 		problem    string
 		command    string
+		username   string
+		password   string
 		problemURL string
 		nocache    bool
 	)
 	flags.StringVar(&contest, "contest", "", "contest you are challenging. e.g.) ABC051")
 	flags.StringVar(&problem, "problem", "", "problem you are solving. e.g.) C")
 	flags.StringVar(&command, "command", "", "command to execute your program. e.g.) 'python c.py'")
+	flags.StringVar(&username, "username", "", "your username of atcoder account. e.g.) 'chokudai'")
+	flags.StringVar(&password, "password", "", "your password of atcoder account. e.g.) 'password'")
 	flags.StringVar(&problemURL, "url", "", "url of the problem page. e.g.) 'https://abc051.contest.atcoder.jp/tasks/abc051_c'")
 	flags.BoolVar(&nocache, "nocache", false, "if set, local cache of samples is not used.")
 	if err := flags.Parse(args[1:]); err != nil {
@@ -71,7 +78,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		}
 	}
 
-	problemURL = strings.Trim(problemURL, "'")
+	problemURL = strings.Trim(problemURL, "'\"")
 
 	var contestURL string
 	if problemURL == "" {
@@ -107,6 +114,9 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		problem: problem,
 		command: command,
 
+		username: username,
+		password: password,
+
 		contestURL: contestURL,
 		problemURL: problemURL,
 
@@ -116,10 +126,18 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 }
 
 func (a *App) Run() error {
-	//beingHeld, err := a.client.IsContestBeingHeld(a.contestURL)
-	//if err != nil {
-	//	return err
-	//}
+	beingHeld, err := a.client.IsContestBeingHeld(a.contestURL)
+	if err != nil {
+		return err
+	}
+
+	if beingHeld {
+		if err := a.client.LogIn(a.username, a.password); err != nil {
+			return err
+		} else {
+			fmt.Println("login success")
+		}
+	}
 
 	var problemURL string
 	if a.problemURL != "" {

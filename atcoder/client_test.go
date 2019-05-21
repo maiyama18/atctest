@@ -28,21 +28,65 @@ func TestClient_IsContestBeingHeld(t *testing.T) {
 		mockStatusCode  int
 		mockHTMLFile    string
 
-		expectedBeingHeld bool
-		expectedErrMsg    string
+		expected       bool
+		expectedErrMsg string
 	}{
 		{
-			name:              "success-apg4b_being_held",
-			inputContestURL:   "https://atcoder.jp/contests/APG4b",
-			mockRequestPath:   "/contests/APG4b",
-			mockStatusCode:    http.StatusOK,
-			mockHTMLFile:      "apg4b_being_held.html",
-			expectedBeingHeld: true,
+			name:            "success-apg4b_being_held",
+			inputContestURL: dummyBaseURL + "/contests/APG4b",
+			mockRequestPath: "/contests/APG4b",
+			mockStatusCode:  http.StatusOK,
+			mockHTMLFile:    "apg4b_being_held.html",
+			expected:        true,
+		},
+		{
+			name:            "success-abc126_not_being_held",
+			inputContestURL: dummyBaseURL + "/contests/abc126",
+			mockRequestPath: "/contests/abc126",
+			mockStatusCode:  http.StatusOK,
+			mockHTMLFile:    "abc126_not_being_held.html",
+			expected:        false,
+		},
+		{
+			name:            "failure-xxx999_not_exist",
+			inputContestURL: dummyBaseURL + "/contests/xxx999",
+			mockRequestPath: "/contests/xxx999",
+			mockStatusCode:  http.StatusNotFound,
+			mockHTMLFile:    "xxx999_not_exist.html",
+			expectedErrMsg:  "could not get HTML",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			html, err := ioutil.ReadFile(path.Join("testdata", "contest", test.mockHTMLFile))
+			if err != nil {
+				t.Fatal(err)
+			}
 
+			defer gock.Off()
+			gock.New(dummyBaseURL).
+				Get(test.mockRequestPath).
+				Reply(test.mockStatusCode).
+				AddHeader("Content-Type", "text/html").
+				BodyString(string(html))
+
+			c := &Client{baseURL: dummyBaseURL}
+			actual, err := c.IsContestBeingHeld(test.inputContestURL)
+			if test.expectedErrMsg == "" {
+				if err != nil {
+					t.Fatalf("err should be nil. got: %s", err)
+				}
+				if actual != test.expected {
+					t.Fatalf("beingHeld wrong. want=%t, got=%t", test.expected, actual)
+				}
+			} else {
+				if err == nil {
+					t.Fatal("err should not be nil. got: nil")
+				}
+				if !strings.Contains(err.Error(), test.expectedErrMsg) {
+					t.Fatalf("expect '%s' to contain '%s'", err.Error(), test.expectedErrMsg)
+				}
+			}
 		})
 	}
 }

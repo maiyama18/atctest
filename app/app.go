@@ -169,4 +169,7 @@ EXAMPLE:
 $ atctest -contest ABC051 -problem C -command 'python c.py'
 $ atctest -url 'https://atcoder.jp/contests/abc051/tasks/abc051_c' -command 'g++ c.cpp; ./a.out'
 
+# for contest in session, login is required to test your code
+$ atctest -contest ABC127 -problem B -command 'ruby b.rb' -username mui87 -password pass1234
+
 OPTION:`

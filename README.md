@@ -36,6 +36,14 @@ $ atctest -url 'https://atcoder.jp/contests/abc087/tasks/abc087_a' -command 'rub
 $ atctest -contest ABC087 -problem A -command 'g++ abc/087/a.cpp; ./a.out'
 ```
 
+#### contest in session 
+
+login is required to test your code for a contest being held.
+
+```bash
+$ atctest -contest ABC127 -problem B -command 'ruby b.rb' -username mui87 -password pass1234
+```
+
 ### results
 
 #### success case

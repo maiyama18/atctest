@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gocolly/colly"
+
 	"gopkg.in/h2non/gock.v1"
 )
 
@@ -70,7 +72,7 @@ func TestClient_IsContestBeingHeld(t *testing.T) {
 				AddHeader("Content-Type", "text/html").
 				BodyString(string(html))
 
-			c := &Client{baseURL: dummyBaseURL}
+			c := &Client{baseURL: dummyBaseURL, collector: colly.NewCollector()}
 			actual, err := c.IsContestBeingHeld(test.inputContestURL)
 			if test.expectedErrMsg == "" {
 				if err != nil {
@@ -183,7 +185,7 @@ func TestClient_GetProblemURL(t *testing.T) {
 				AddHeader("Content-Type", "text/html").
 				BodyString(string(html))
 
-			c := &Client{baseURL: dummyBaseURL}
+			c := &Client{baseURL: dummyBaseURL, collector: colly.NewCollector()}
 			problemURL, err := c.GetProblemURL(test.inputContest, test.inputProblem)
 			if test.expectedErrMsg == "" {
 				if err != nil {
@@ -409,7 +411,7 @@ func TestClient_GetSamples(t *testing.T) {
 			}
 
 			var errBuff bytes.Buffer
-			c := &Client{baseURL: dummyBaseURL, useCache: test.inputUseCache, cacheDirPath: test.inputCacheDirPath, errStream: &errBuff}
+			c := &Client{baseURL: dummyBaseURL, collector: colly.NewCollector(), useCache: test.inputUseCache, cacheDirPath: test.inputCacheDirPath, errStream: &errBuff}
 			samples, err := c.GetSamples(test.inputProblemURL)
 			if test.expectedErrMsg == "" {
 				if err != nil {
@@ -640,7 +642,7 @@ func TestClient_fetchSampleElements(t *testing.T) {
 				AddHeader("Content-Type", "text/html").
 				BodyString(string(html))
 
-			c := &Client{}
+			c := &Client{collector: colly.NewCollector()}
 			sampleElements, err := c.fetchSampleElements(test.inputProblemURL)
 			if test.expectedErrMsg == "" {
 				if err != nil {

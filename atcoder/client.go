@@ -19,7 +19,8 @@ type Sample struct {
 }
 
 type Client struct {
-	baseURL string
+	baseURL   string
+	collector *colly.Collector
 
 	useCache     bool
 	cacheDirPath string
@@ -31,6 +32,7 @@ type Client struct {
 func NewClient(baseURL string, useCache bool, cacheDirPath string, outStream, errStream io.Writer) *Client {
 	return &Client{
 		baseURL:      baseURL,
+		collector:    colly.NewCollector(),
 		useCache:     useCache,
 		cacheDirPath: cacheDirPath,
 		outStream:    outStream,
@@ -39,14 +41,12 @@ func NewClient(baseURL string, useCache bool, cacheDirPath string, outStream, er
 }
 
 func (c *Client) IsContestBeingHeld(contestURL string) (bool, error) {
-	cl := colly.NewCollector()
-
 	beingHeld := false
-	cl.OnHTML(`form > button.btn-lg.center-block`, func(e *colly.HTMLElement) {
+	c.collector.OnHTML(`form > button.btn-lg.center-block`, func(e *colly.HTMLElement) {
 		beingHeld = true
 	})
 
-	if err := cl.Visit(contestURL); err != nil {
+	if err := c.collector.Visit(contestURL); err != nil {
 		return false, fmt.Errorf("could not get HTML: %s", contestURL)
 	}
 
@@ -54,10 +54,8 @@ func (c *Client) IsContestBeingHeld(contestURL string) (bool, error) {
 }
 
 func (c *Client) GetProblemURL(contest, problem string) (string, error) {
-	cl := colly.NewCollector()
-
 	var problemURL string
-	cl.OnHTML(`td > a[href]`, func(e *colly.HTMLElement) {
+	c.collector.OnHTML(`td > a[href]`, func(e *colly.HTMLElement) {
 		e.DOM.First()
 		if e.Text == strings.ToUpper(problem) {
 			problemURL = c.baseURL + e.Attr("href")
@@ -65,7 +63,7 @@ func (c *Client) GetProblemURL(contest, problem string) (string, error) {
 	})
 
 	problemListURL := fmt.Sprintf("%s/contests/%s/tasks", c.baseURL, strings.ToLower(contest))
-	if err := cl.Visit(problemListURL); err != nil {
+	if err := c.collector.Visit(problemListURL); err != nil {
 		return "", fmt.Errorf("could not get HTML: %s", problemListURL)
 	}
 
@@ -144,10 +142,8 @@ func (c *Client) cacheSamples(cacheFilePath string, samples []Sample) error {
 }
 
 func (c *Client) fetchSampleElements(problemURL string) (map[string]string, error) {
-	cl := colly.NewCollector()
-
 	elements := make(map[string]string)
-	cl.OnHTML(`pre`, func(e *colly.HTMLElement) {
+	c.collector.OnHTML(`pre`, func(e *colly.HTMLElement) {
 		title := e.DOM.Parent().Find("h3").Text()
 		if strings.HasPrefix(title, "入力例") || strings.HasPrefix(title, "出力例") {
 			titleKey := strings.Replace(title, " ", "", -1)
@@ -161,7 +157,7 @@ func (c *Client) fetchSampleElements(problemURL string) (map[string]string, erro
 		}
 	})
 
-	if err := cl.Visit(problemURL); err != nil {
+	if err := c.collector.Visit(problemURL); err != nil {
 		return nil, fmt.Errorf("could not get HTML: %s", problemURL)
 	}
 

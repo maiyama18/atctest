@@ -116,6 +116,11 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 }
 
 func (a *App) Run() error {
+	//beingHeld, err := a.client.IsContestBeingHeld(a.contestURL)
+	//if err != nil {
+	//	return err
+	//}
+
 	var problemURL string
 	if a.problemURL != "" {
 		problemURL = a.problemURL

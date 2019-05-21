@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/mui87/atctest/atcoder"
@@ -22,6 +23,7 @@ type App struct {
 	problem string
 	command string
 
+	contestURL string
 	problemURL string
 
 	outStream io.Writer
@@ -69,6 +71,19 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		}
 	}
 
+	problemURL = strings.Trim(problemURL, "'")
+
+	var contestURL string
+	if problemURL == "" {
+		contestURL = fmt.Sprintf("%s/contests/%s", baseURL, strings.ToLower(contest))
+	} else {
+		contestURL = strings.TrimRight(problemURL, "/")
+		i := strings.LastIndex(contestURL, "/")
+		contestURL = contestURL[:i]
+		i = strings.LastIndex(contestURL, "/")
+		contestURL = contestURL[:i]
+	}
+
 	useCache := !nocache
 	var cacheDirPath string
 	home, err := homedir.Dir()
@@ -92,6 +107,7 @@ func New(args []string, outStream, errStream io.Writer) (*App, error) {
 		problem: problem,
 		command: command,
 
+		contestURL: contestURL,
 		problemURL: problemURL,
 
 		outStream: outStream,

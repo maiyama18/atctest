@@ -7,7 +7,7 @@ require (
 	github.com/antchfx/xpath v0.0.0-20190319080838-ce1d48779e67 // indirect
 	github.com/fatih/color v1.7.0
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gocolly/colly v1.2.0
+	github.com/gocolly/colly v1.2.1-0.20190408114448-b3d99101c625
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect

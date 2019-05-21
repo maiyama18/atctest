@@ -18,6 +18,35 @@ const dummyBaseURL = "https://dummyatcoder.jp"
 
 var dummyCacheDirPath = path.Join("testdata", "cache")
 
+func TestClient_IsContestBeingHeld(t *testing.T) {
+	tests := []struct {
+		name string
+
+		inputContestURL string
+
+		mockRequestPath string
+		mockStatusCode  int
+		mockHTMLFile    string
+
+		expectedBeingHeld bool
+		expectedErrMsg    string
+	}{
+		{
+			name:              "success-apg4b_being_held",
+			inputContestURL:   "https://atcoder.jp/contests/APG4b",
+			mockRequestPath:   "/contests/APG4b",
+			mockStatusCode:    http.StatusOK,
+			mockHTMLFile:      "apg4b_being_held.html",
+			expectedBeingHeld: true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+
+		})
+	}
+}
+
 func TestClient_GetProblemURL(t *testing.T) {
 	tests := []struct {
 		name string

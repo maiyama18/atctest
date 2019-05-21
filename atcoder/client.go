@@ -38,6 +38,21 @@ func NewClient(baseURL string, useCache bool, cacheDirPath string, outStream, er
 	}
 }
 
+func (c *Client) IsContestBeingHeld(contestURL string) (bool, error) {
+	cl := colly.NewCollector()
+
+	beingHeld := false
+	cl.OnHTML(`form > button.btn-lg.center-block`, func(e *colly.HTMLElement) {
+		beingHeld = true
+	})
+
+	if err := cl.Visit(contestURL); err != nil {
+		return false, fmt.Errorf("could not get HTML: %s", contestURL)
+	}
+
+	return beingHeld, nil
+}
+
 func (c *Client) GetProblemURL(contest, problem string) (string, error) {
 	cl := colly.NewCollector()
 

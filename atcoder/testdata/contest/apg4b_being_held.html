@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>AtCoder Programming Guide for beginners (APG4b) - AtCoder</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content='ja'>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="google-site-verification" content="nXGC_JxO0yoP1qBzMnYD_xgufO6leSLw1kyNo2HZltM" />
+
+	
+	<meta name="description" content="プログラミング初級者から上級者まで楽しめる、プログラミングコンテストサイト「AtCoder」。オンラインで毎週開催プログラミングコンテストを開催しています。競技プログラミングを用いて、客観的に自分のスキルを計ることのできるサービスです。">
+	<meta name="author" content="AtCoder Inc.">
+	<link rel="canonical" href="https://atcoder.jp/">
+
+	<meta property="og:site_name" content="AtCoder">
+	
+	<meta property="og:title" content="AtCoder Programming Guide for beginners (APG4b) - AtCoder" />
+	<meta property="og:description" content="プログラミング初級者から上級者まで楽しめる、プログラミングコンテストサイト「AtCoder」。オンラインで毎週開催プログラミングコンテストを開催しています。競技プログラミングを用いて、客観的に自分のスキルを計ることのできるサービスです。" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://atcoder.jp/contests/APG4b" />
+	<meta property="og:image" content="https://img.atcoder.jp/assets/atcoder.png" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@atcoder" />
+	
+	<meta property="twitter:title" content="AtCoder Programming Guide for beginners (APG4b) - AtCoder" />
+
+	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href='/public/css/bootstrap.min.css?v=201905180146'>
+	<link rel="stylesheet" type="text/css" href='/public/css/base.css?v=201905180146'>
+	<link rel="shortcut icon" type="image/png" href="//img.atcoder.jp/assets/favicon.png">
+	<link rel="apple-touch-icon" href="//img.atcoder.jp/assets/atcoder.png">
+	<script src='/public/js/lib/jquery-1.9.1.min.js?v=201905180146'></script>
+	<script src='/public/js/lib/bootstrap.min.js?v=201905180146'></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/locale/ja.js"></script>
+	<script>
+		var LANG = "ja";
+		var userScreenName = "mui87";
+	</script>
+	<script src='/public/js/utils.js?v=201905180146'></script>
+	
+	
+		<script src='/public/js/contest.js?v=201905180146'></script>
+		<link href='/public/css/contest.css?v=201905180146' rel="stylesheet" />
+		<script>
+			var contestScreenName = "APG4b";
+			var remainingText = "残り時間";
+			var countDownText = "開始まであと";
+			var startTime = moment("2017-12-13T21:00:00+09:00");
+			var endTime = moment("4017-12-13T21:00:00+09:00");
+		</script>
+		<style></style>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<script src='/public/js/base.js?v=201905180146'></script>
+	<script src='/public/js/ga.js?v=201905180146'></script>
+</head>
+
+<body>
+<div id="modal-contest-start" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト開始</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Programming Guide for beginners (APG4b)が開始されました。</p>
+			</div>
+			<div class="modal-footer">
+				
+					<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal-contest-end" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト終了</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Programming Guide for beginners (APG4b)は終了しました。</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main-div" class="float-container">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/"></a>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+				
+					<li><a class="contest-title" href='/contests/APG4b'>AtCoder Programming Guide for beginners (APG4b)</a></li>
+				
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<img src='//img.atcoder.jp/assets/flag-lang/ja.png'> 日本語 <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href='/contests/APG4b?lang=ja'><img src='//img.atcoder.jp/assets/flag-lang/ja.png'> 日本語</a></li>
+							<li><a href='/contests/APG4b?lang=en'><img src='//img.atcoder.jp/assets/flag-lang/en.png'> English</a></li>
+						</ul>
+					</li>
+					
+					
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> mui87 (Guest) <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href='/users/mui87'><span class="glyphicon glyphicon-user" aria-hidden="true"></span> マイプロフィール</a></li>
+								<li class="divider"></li>
+								<li><a href='/settings'><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> 基本設定</a></li>
+								<li><a href='/settings/icon'><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> アイコン設定</a></li>
+								<li><a href='/settings/password'><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> パスワードの変更</a></li>
+								
+								
+								<li class="divider"></li>
+								<li><a href='javascript:void(form_logout.submit())'><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> ログアウト</a></li>
+							</ul>
+						</li>
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<form method="POST" name="form_logout" action='/logout?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2FAPG4b'>
+		<input type="hidden" name="csrf_token" value='/K5hnbROW8g&#43;r7/ACrpnpNTiI7zmqlpbml4Vc/WWfuc=' />
+	</form>
+	<div id="main-container" class="container" style="padding-top:50px;">
+		
+
+<div class="row">
+	<div id="contest-nav-tabs" class="col-sm-12 mb-2 cnvtb-fixed">
+	<div>
+		<small class="contest-duration">コンテスト時間: <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=20171213T2100&p1=248' target='blank'><time class='fixtime fixtime-full'>2017-12-13 21:00:00+0900</time></a> ~ <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=40171213T2100&p1=248' target='blank'><time class='fixtime fixtime-full'>4017-12-13 21:00:00+0900</time></a> </small>
+		<small class="back-to-home pull-right"><a href='/'>AtCoderホームへ戻る</a></small>
+	</div>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href='/contests/APG4b'><span class="glyphicon glyphicon-home" aria-hidden="true"></span> トップ</a></li>
+		
+			<li><a href='/contests/APG4b/tasks'><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 問題</a></li>
+		
+
+		
+			<li><a href='/contests/APG4b/clarifications'><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 質問 <span id="clar-badge" class="badge"></span></a></li>
+		
+
+		
+			<li><a href='/contests/APG4b/submit'><span class="glyphicon glyphicon-send" aria-hidden="true"></span> 提出</a></li>
+		
+
+		
+			<li>
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> 提出一覧<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href='/contests/APG4b/submissions'><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> すべての提出</a></li>
+					<li><a href='/contests/APG4b/submissions/me'><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 自分の提出</a></li>
+				</ul>
+			</li>
+		
+
+		
+			<li><a href='/contests/APG4b/standings'><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> 順位表</a></li>
+		
+
+		
+			<li><a href='/contests/APG4b/custom_test'><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> コードテスト</a></li>
+		
+
+		
+
+		<li class="pull-right"><a id="fix-cnvtb" href="javascript:void(0)"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a></li>
+	</ul>
+</div>
+	<div class="col-sm-12">
+		<div class="insert-participant-box">
+			<h1 class="text-center">AtCoder Programming Guide for beginners (APG4b)</h1>
+			
+				<form method="POST" action='/contests/APG4b/register'>
+					<input type="hidden" name="csrf_token" value='/K5hnbROW8g&#43;r7/ACrpnpNTiI7zmqlpbml4Vc/WWfuc=' />
+					<button class="btn btn-lg btn-primary center-block">参加登録</button>
+				</form>
+			
+			
+		</div>
+		<p class="small" style="color: #666;">
+			<span class="mr-2">参加対象: All</span>
+			<span class="mr-2">Rated対象: -</span>
+			<span class="mr-2">ペナルティ: なし</span>
+			
+		</p>
+		
+		<div id="contest-statement"><span class="lang"><span class="lang-ja">
+<script type="text/javascript"> if (location.href.includes('apg4b.contest.atcoder.jp')) { location.href = 'https://beta.atcoder.jp/contests/apg4b'; }</script>
+
+<p>プログラミング入門教材 AtCoder Programming Guide for beginners (APG4b)へようこそ。  </p>
+
+<div class="part">
+<section>
+<h3>対象読者</h3><p>APG4bは中学生から社会人までのプログラミング初心者を対象としています。  </p>
+<p>多くの入門書とは異なり、APG4bは汎用的な「プログラミングの基礎」を学ぶことを目的としているため、プログラミングそのものに興味がある人から、アプリやゲームを作りたいと思っている人まで、最初のプログラミング教材としてオススメできます。  </p>
+<p>また、説明が丁寧に行われているので、「プログラミングの勉強を一度してみたが挫折してしまった」という人にもオススメです。  </p>
+</section>
+</div>
+
+<div class="part">
+<section>
+<h3>APG4bの特徴</h3><p>APG4bの大きな特徴は、プログラムの説明に練習問題がついていること、そして練習問題の自動採点システムがあることです。  </p>
+<p>プログラミングの初学者のよくあるパターンとして、「入門書を読みながらそこに書いてあるプログラムをなんとなく写していたが、よくわからなくなってやめてしまう」というものがあります。<br />
+APG4bでプログラミングの学習を行えばその心配はありません。説明を読んだあと、練習問題を自分で考えてプログラムを書き、その正しさを採点システムで確認することで、着実にプログラムを書けるようになっていきます。  </p>
+</section>
+</div>
+
+<div class="part">
+<section>
+<h3>APG4bの取り組み方</h3><p><a href="https://beta.atcoder.jp/register">AtCoderのアカウントを作成</a>した後、このページの「参加登録」ボタンを押してください。  </p>
+<p>参加登録ができたら、ページ上部にある「問題」ボタンをクリックしてページ一覧を開き、「1.00.はじめに」から読み進めて行きましょう。  </p>
+<p>説明をしているページの一番下には練習問題がついています。説明を読み終えたら必ず練習問題を解きましょう。  </p>
+</section>
+</div>
+
+<div class="part">
+<section>
+<h3>目次</h3><p>APG4bは大きく分けて以下の4つの章からできています。</p>
+<p>第1章 基本文法<br />
+第2章 複雑な計算処理の書き方<br />
+第3章 知っておくと良いこと<br />
+第4章 今まで説明していなかったこと  </p>
+<p>具体的な目次は以下のとおりです。</p>
+<p><a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_a">1.00.はじめに</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_b">1.01.出力とコメント</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_c">1.02.プログラムの書き方とエラー</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_d">1.03.四則演算と優先順位</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_e">1.04.変数と型</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_f">1.05.プログラムの実行順序と入力</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_g">1.06.if文・比較演算子・論理演算子</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_h">1.07.条件式の結果とbool型</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_i">1.08.変数のスコープ</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_j">1.09.複合代入演算子</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_k">1.10.while文</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_l">1.11.for文・break・continue</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_m">1.12.文字列と文字</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_n">1.13.配列</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_o">1.14.STLの関数</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_p">1.15.関数</a>  </p>
+<p><a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_q">2.00.第2章について</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_r">2.01.ループの書き方</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_s">2.02.多重ループ</a><br />
+<a href="https://beta.atcoder.jp/contests/APG4b/tasks/APG4b_t">2.03.多次元配列</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_u">2.04.参照</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_v">2.05.再帰関数</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_w">2.06.計算量</a>  </p>
+<p><a href="https://atcoder.jp/contests/apg4b/tasks/APG4b_x">3.00.第3章について</a><br />
+<a href="https://atcoder.jp/contests/apg4b/tasks/APG4b_y">3.01.数値型</a><br />
+3.02.pairとtuple<br />
+3.03.構造体<br />
+3.04.STLのコンテナ<br />
+3.05.ビット演算<br />
+3.06.文字コード<br />
+3.07.条件演算子<br />
+3.08.グローバル変数と定数  </p>
+<p>4.00.第4章について<br />
+4.01.includeとdefineマクロ<br />
+4.02.名前空間<br />
+4.03.テンプレート<br />
+4.04.イテレータ  </p>
+<p><a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_ak">付録1.コードテストの使い方</a><br />
+<a href="https://beta.atcoder.jp/contests/apg4b/tasks/APG4b_al">付録2.提出結果の見方</a><br />
+付録3.典型エラー集<br />
+付録4.速習APG4b  </p>
+</section>
+</div>
+
+<div class="part">
+<section>
+<h3>意見募集中</h3>
+<p>APG4bでは皆様のご意見をお待ちしております。<br />
+誤字・脱字等のご指摘はもちろん、わかりにくかったところや説明の改善案など、お気軽に送ってきてください。  </p>
+<p>ご意見は<a href="https://twitter.com/apg4b">公式ツイッターアカウント</a>へお願いします。  </p>
+</section>
+</div>
+
+<div class="part">
+<section>
+<h3>プログラミングに詳しい人向けの説明</h3>
+<p>プログラミングに慣れた人がこの教材を見た時、色々思うところがあるかもしれません。<br />
+そこで、この教材がどのようなコンセプトで書かれているかを説明しておきたいと思います。  </p>
+<p>...</p>
+<p>プログラムとは何のためにあるのでしょうか？<br />
+「便利なアプリを作るため」「ゲームをつくるため」「『人工知能』をつくるため」など、色々あると思います。<br />
+これらの具体例は決して間違いではありませんが、プログラミングにはより根源的な用途があります。<br />
+それは「計算」です。  </p>
+<p>コンピュータが開発された当初、その用途は高度な電卓でした。<br />
+それから月日が流れ、様々な用途に応用されるようになっても、最終的にコンピュータが行っていることが計算であることには変わりません。<br />
+「スマホで友達にメッセージを送信する」「ゲームで当たり判定をする」「機械翻訳をする」等は全てコンピュータの高度な計算能力に支えられています。<br />
+そして、その計算をするコンピュータを動かすのがプログラムです。  </p>
+<p>このことを踏まえ、この教材は「計算のためのプログラミング」ということを意識して書かれています。<br />
+具体的には、「処理を一般化してループや配列を扱えるようになる」「再帰関数を扱えるようになる」ということを大きな目標にしています。<br />
+「データ構造とアルゴリズム」や「数値計算」の一歩手前くらいのイメージです。  </p>
+<p>この目標にできるだけ最短で到達するため、一般的な入門書で書かれることがある「プログラムの設計」のような話は意図的に省いています。<br />
+もちろん、設計はプログラミングの中でも一つの重要な要素ではありますが、「計算」という観点から言えば本質的ではありません。<br />
+また、C++に関する詳細な説明も省いています。この教材はC++に詳しくなることを目的としていないからです。  </p>
+<p>もしC++の詳細な知識や設計の知識が必要な場合は、この教材を終えた後、別の資料で勉強するのが良いと思っています。<br />
+それらの項目は「プログラムが書ける」ようになってから学んだほうが効率的に吸収できることもあるでしょう。  </p>
+<p>もちろん、全てのプログラミング初学者にとってこの教材が最適と言い切れるわけではありませんが、
+ゲームエンジンの使い方を覚えたり、特殊なライブラリの仕様に惑わされたりすることなく、「プログラムを書ける」ところまで迅速に学べるようになっているこの教材は、多くの人にとって良いスタートになれると考えています。  </p>
+<p>...</p>
+<p>ここまで書いた段階で、まず議論に上がりそうな要素について触れておきます。  </p>
+<p>この教材では<code>#include &lt;bits/stdc++.h&gt;</code>とグローバル空間での<code>using namespace std;</code>を使っています。<br />
+保守する必要があり、集団開発を行っているような場合、この機能を使うことは許されないことが多いでしょう。  </p>
+<p>しかし、プログラミング入門で使われるような、短くて保守する必要のないプログラムではこれらを使うことによる問題がほとんど起きません。<br />
+もちろん影響はゼロではありませんが、それよりも「おまじない」的に用いられる部分が多くなってしまうことを避けるため、これらを使用することにしました。<br />
+（「おまじない」と言っていますが説明がないわけではありません。後で説明することを明記した上、教材の終盤で説明しています。）  </p>
+<p>また、細かい話ですが、main関数のreturnも省略しています。これも序盤における「おまじない」要素を減らすために行っています。（C++のmain関数では、returnを省略すると<code>return 0;</code>がコンパイル時に追加されます。）</p></section>
+</div>
+</span>
+</span></div>
+		<script>
+			$('iframe').each(function() {
+				if ($(this).hasClass('no-responsive') || $(this).hasClass('embed-responsive-item')) return;
+				$(this).addClass('embed-responsive-item').wrap('<div class="embed-responsive embed-responsive-16by9"></div>');
+			});
+		</script>
+		
+		
+		
+	</div>
+</div>
+
+
+		
+			<hr>
+			
+			
+			
+<div class="a2a_kit a2a_kit_size_20 a2a_default_style pull-right" data-a2a-url="https://atcoder.jp/contests/APG4b?lang=ja" data-a2a-title="AtCoder Programming Guide for beginners (APG4b) - AtCoder">
+	<a class="a2a_button_facebook"></a>
+	<a class="a2a_button_twitter"></a>
+	
+		<a class="a2a_button_hatena"></a>
+	
+	<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+</div>
+
+		
+		<script async src="//static.addtoany.com/menu/page.js"></script>
+		
+	</div> 
+	<hr>
+</div> 
+<div class="container">
+    <footer class="footer">
+		
+			<ul>
+				<li><a href='/contests/APG4b/rules'>ルール</a></li>
+				<li><a href='/contests/APG4b/glossary'>用語集</a></li>
+				
+			</ul>
+		
+		<ul>
+			<li><a href='/tos'>利用規約</a></li>
+			<li><a href='/privacy'>プライバシーポリシー</a></li>
+			<li><a href='/personal'>個人情報保護方針</a></li>
+			<li><a href='/company'>企業情報</a></li>
+			<li><a href='/faq'>よくある質問</a></li>
+			<li><a href='/contact'>お問い合わせ</a></li>
+			<li><a href='/documents/request'>資料請求</a></li>
+		</ul>
+    <div class="text-center">
+        <small id="copyright">Copyright Since 2012 &copy;<a href="http://atcoder.co.jp">AtCoder Inc.</a> All rights reserved.</small>
+    </div>
+    </footer>
+</div>
+<p id="fixed-server-timer" class='contest-timer'></p>
+
+	<div id="scroll-page-top" style="display:none;"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> ページトップ</div>
+
+</body>
+</html>
+

@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>AtCoder Beginner Contest 126 - AtCoder</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content='ja'>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="google-site-verification" content="nXGC_JxO0yoP1qBzMnYD_xgufO6leSLw1kyNo2HZltM" />
+
+	
+	<meta name="description" content="プログラミング初級者から上級者まで楽しめる、プログラミングコンテストサイト「AtCoder」。オンラインで毎週開催プログラミングコンテストを開催しています。競技プログラミングを用いて、客観的に自分のスキルを計ることのできるサービスです。">
+	<meta name="author" content="AtCoder Inc.">
+	<link rel="canonical" href="https://atcoder.jp/">
+
+	<meta property="og:site_name" content="AtCoder">
+	
+	<meta property="og:title" content="AtCoder Beginner Contest 126 - AtCoder" />
+	<meta property="og:description" content="プログラミング初級者から上級者まで楽しめる、プログラミングコンテストサイト「AtCoder」。オンラインで毎週開催プログラミングコンテストを開催しています。競技プログラミングを用いて、客観的に自分のスキルを計ることのできるサービスです。" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://atcoder.jp/contests/abc126" />
+	<meta property="og:image" content="https://img.atcoder.jp/assets/atcoder.png" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@atcoder" />
+	
+	<meta property="twitter:title" content="AtCoder Beginner Contest 126 - AtCoder" />
+
+	<link href='//fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href='/public/css/bootstrap.min.css?v=201905180146'>
+	<link rel="stylesheet" type="text/css" href='/public/css/base.css?v=201905180146'>
+	<link rel="shortcut icon" type="image/png" href="//img.atcoder.jp/assets/favicon.png">
+	<link rel="apple-touch-icon" href="//img.atcoder.jp/assets/atcoder.png">
+	<script src='/public/js/lib/jquery-1.9.1.min.js?v=201905180146'></script>
+	<script src='/public/js/lib/bootstrap.min.js?v=201905180146'></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/locale/ja.js"></script>
+	<script>
+		var LANG = "ja";
+		var userScreenName = "mui87";
+	</script>
+	<script src='/public/js/utils.js?v=201905180146'></script>
+	
+	
+		<script src='/public/js/contest.js?v=201905180146'></script>
+		<link href='/public/css/contest.css?v=201905180146' rel="stylesheet" />
+		<script>
+			var contestScreenName = "abc126";
+			var remainingText = "残り時間";
+			var countDownText = "開始まであと";
+			var startTime = moment("2019-05-19T21:00:00+09:00");
+			var endTime = moment("2019-05-19T22:40:00+09:00");
+		</script>
+		<style></style>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<script src='/public/js/base.js?v=201905180146'></script>
+	<script src='/public/js/ga.js?v=201905180146'></script>
+</head>
+
+<body>
+<div id="modal-contest-start" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト開始</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 126が開始されました。</p>
+			</div>
+			<div class="modal-footer">
+				
+					<a class="btn btn-primary" href='/contests/abc126/tasks'>問題一覧ページへ移動</a>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal-contest-end" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト終了</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 126は終了しました。</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main-div" class="float-container">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/"></a>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+				
+					<li><a class="contest-title" href='/contests/abc126'>AtCoder Beginner Contest 126</a></li>
+				
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<img src='//img.atcoder.jp/assets/flag-lang/ja.png'> 日本語 <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href='/contests/abc126?lang=ja'><img src='//img.atcoder.jp/assets/flag-lang/ja.png'> 日本語</a></li>
+							<li><a href='/contests/abc126?lang=en'><img src='//img.atcoder.jp/assets/flag-lang/en.png'> English</a></li>
+						</ul>
+					</li>
+					
+					
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> mui87 (Contestant) <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href='/users/mui87'><span class="glyphicon glyphicon-user" aria-hidden="true"></span> マイプロフィール</a></li>
+								<li class="divider"></li>
+								<li><a href='/settings'><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> 基本設定</a></li>
+								<li><a href='/settings/icon'><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> アイコン設定</a></li>
+								<li><a href='/settings/password'><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> パスワードの変更</a></li>
+								
+								
+								<li class="divider"></li>
+								<li><a href='javascript:void(form_logout.submit())'><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> ログアウト</a></li>
+							</ul>
+						</li>
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<form method="POST" name="form_logout" action='/logout?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc126'>
+		<input type="hidden" name="csrf_token" value='/K5hnbROW8g&#43;r7/ACrpnpNTiI7zmqlpbml4Vc/WWfuc=' />
+	</form>
+	<div id="main-container" class="container" style="padding-top:50px;">
+		
+
+<div class="row">
+	<div id="contest-nav-tabs" class="col-sm-12 mb-2 cnvtb-fixed">
+	<div>
+		<small class="contest-duration">コンテスト時間: <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=20190519T2100&p1=248' target='blank'><time class='fixtime fixtime-full'>2019-05-19 21:00:00+0900</time></a> ~ <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=20190519T2240&p1=248' target='blank'><time class='fixtime fixtime-full'>2019-05-19 22:40:00+0900</time></a> </small>
+		<small class="back-to-home pull-right"><a href='/'>AtCoderホームへ戻る</a></small>
+	</div>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href='/contests/abc126'><span class="glyphicon glyphicon-home" aria-hidden="true"></span> トップ</a></li>
+		
+			<li><a href='/contests/abc126/tasks'><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 問題</a></li>
+		
+
+		
+			<li><a href='/contests/abc126/clarifications'><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 質問 <span id="clar-badge" class="badge"></span></a></li>
+		
+
+		
+			<li><a href='/contests/abc126/submit'><span class="glyphicon glyphicon-send" aria-hidden="true"></span> 提出</a></li>
+		
+
+		
+			<li>
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> 提出一覧<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href='/contests/abc126/submissions'><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> すべての提出</a></li>
+					<li><a href='/contests/abc126/submissions/me'><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 自分の提出</a></li>
+				</ul>
+			</li>
+		
+
+		
+			<li><a href='/contests/abc126/standings'><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> 順位表</a></li>
+		
+
+		
+			<li><a href='/contests/abc126/custom_test'><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> コードテスト</a></li>
+		
+
+		
+			<li>
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> 解説<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href='https://img.atcoder.jp/abc126/editorial.pdf' target="_blank"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> PDF</a></li>
+					<li><a href='https://www.youtube.com/watch?v=26AWkQNRb-A' target="_blank"><span class="glyphicon glyphicon-film" aria-hidden="true"></span> YouTube</a></li>
+				</ul>
+			</li>
+		
+
+		<li class="pull-right"><a id="fix-cnvtb" href="javascript:void(0)"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a></li>
+	</ul>
+</div>
+	<div class="col-sm-12">
+		<div class="insert-participant-box">
+			<h1 class="text-center">AtCoder Beginner Contest 126</h1>
+			
+			
+		</div>
+		<p class="small" style="color: #666;">
+			<span class="mr-2">参加対象: All</span>
+			<span class="mr-2">Rated対象:  ~ 1999</span>
+			<span class="mr-2">ペナルティ: 5分</span>
+			
+		</p>
+		
+		<div id="contest-statement"><span class="lang">
+  <span class="lang-ja">
+ジャッジトラブルのためUnratedとなりました。申し訳ありません。Unratedとなった理由は<a href="https://twitter.com/atcoder/status/1130130313366200320">こちら</a>をご確認ください。 
+
+    <h3>コンテスト情報</h3>
+    <section>
+      <ul>
+	<li>コンテスト時間: 100 分</li>
+	<li>レーティング更新対象: 0 - <span class="user-blue">1999</span></li>
+      </ul>
+    </section>
+
+    <h3>配点</h3>
+    <section>
+      <div class="row">
+	<div class="span4">
+	  <table class="table table-responsible table-striped table-bordered">
+	    <thead>
+	      <tr>
+		<th style="text-align:center">問題</th>
+		<th style="text-align:center">点数</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		<td style="text-align:center">A</td>
+		<td style="text-align:center">100</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">B</td>
+		<td style="text-align:center">200</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">C</td>
+		<td style="text-align:center">300</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">D</td>
+		<td style="text-align:center">400</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">E</td>
+		<td style="text-align:center">500</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">F</td>
+		<td style="text-align:center">600</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	</div>
+      </div>
+    </section>
+
+    <h3>ルール</h3>
+    <section>
+      <ol>
+	<li>コンテスト中に問題に正解すると点数を獲得できます。</li>
+	<li>順位は総合得点で決定します。</li>
+	<li>同点の場合は提出時間の早い人が上の順位になります。</li>
+	<li>誤答を提出するたびにペナルティが加算されます。このコンテストのペナルティは5分です。詳細は画面下部の「ルール」をご覧ください。</li>
+      </ol>
+      <p style="margin-left: 20px;">
+	このコンテストは full-feedback 形式のコンテストです。コンテスト中に判定された結果だけで順位が決定します。
+      </p>
+    </section>
+    
+    <h3>便利情報</h3>
+    <ul>
+      <li><a href="https://atcoder.jp/">トップページ</a></li>
+      <li><a href="https://atcoder.jp/post/2">参加方法</a></li>
+      <li><a href="https://atcoder.jp/contests/practice">提出の練習ページ</a></li>
+    </ul>
+  </span>
+  
+  <span class="lang-en">
+
+    <h3>Contest Information</h3>
+
+    <ul>
+      <li>Duration: 100 minutes</li>
+      <li>Rated Range: 0 - <span class="user-blue">1999</span></li>
+    </ul>
+
+    <h3>Point Values</h3>
+
+    <div class="row"><div class="span4">
+	<table class="table table-responsible table-striped table-bordered">
+	  <thead>
+	    <tr>
+	      <th style="text-align:center">Task</th>
+	      <th style="text-align:center">Score</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	      <tr>
+		<td style="text-align:center">A</td>
+		<td style="text-align:center">100</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">B</td>
+		<td style="text-align:center">200</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">C</td>
+		<td style="text-align:center">300</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">D</td>
+		<td style="text-align:center">400</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">E</td>
+		<td style="text-align:center">500</td>
+	      </tr>
+	      <tr>
+		<td style="text-align:center">F</td>
+		<td style="text-align:center">600</td>
+	      </tr>
+	    </tbody>
+	</table>
+      </div>
+    </div>
+
+    <h3>Contest Rules</h3>
+    This contest is full-feedback (solutions are judged during the contest).
+    <br></br>
+    When you solve a problem, you get a score assigned to it.
+    Competitors are ranked first by total scores, then by penalties.
+    The penalties are computed as (the time you spend to get your current score) + (5 minutes) * (the number of incorrect attempts).
+
+    <br></br>
+
+    <h3>Useful Links</h3>
+    <ul>
+      <li><a href="https://atcoder.jp/">AtCoder top page</a></li>
+      <li><a href="https://atcoder.jp/post/2">How to participate</a></li>
+      <li><a href="https://atcoder.jp/contests/practice">Practice contest</a></li>
+    </ul>
+
+  </span>
+</span>
+</div>
+		<script>
+			$('iframe').each(function() {
+				if ($(this).hasClass('no-responsive') || $(this).hasClass('embed-responsive-item')) return;
+				$(this).addClass('embed-responsive-item').wrap('<div class="embed-responsive embed-responsive-16by9"></div>');
+			});
+		</script>
+		
+		
+		
+	</div>
+</div>
+
+
+		
+			<hr>
+			
+			
+			
+<div class="a2a_kit a2a_kit_size_20 a2a_default_style pull-right" data-a2a-url="https://atcoder.jp/contests/abc126?lang=ja" data-a2a-title="AtCoder Beginner Contest 126 - AtCoder">
+	<a class="a2a_button_facebook"></a>
+	<a class="a2a_button_twitter"></a>
+	
+		<a class="a2a_button_hatena"></a>
+	
+	<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+</div>
+
+		
+		<script async src="//static.addtoany.com/menu/page.js"></script>
+		
+	</div> 
+	<hr>
+</div> 
+<div class="container">
+    <footer class="footer">
+		
+			<ul>
+				<li><a href='/contests/abc126/rules'>ルール</a></li>
+				<li><a href='/contests/abc126/glossary'>用語集</a></li>
+				
+			</ul>
+		
+		<ul>
+			<li><a href='/tos'>利用規約</a></li>
+			<li><a href='/privacy'>プライバシーポリシー</a></li>
+			<li><a href='/personal'>個人情報保護方針</a></li>
+			<li><a href='/company'>企業情報</a></li>
+			<li><a href='/faq'>よくある質問</a></li>
+			<li><a href='/contact'>お問い合わせ</a></li>
+			<li><a href='/documents/request'>資料請求</a></li>
+		</ul>
+    <div class="text-center">
+        <small id="copyright">Copyright Since 2012 &copy;<a href="http://atcoder.co.jp">AtCoder Inc.</a> All rights reserved.</small>
+    </div>
+    </footer>
+</div>
+<p id="fixed-server-timer" class='contest-timer'></p>
+
+	<div id="scroll-page-top" style="display:none;"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> ページトップ</div>
+
+</body>
+</html>
+
